@@ -23,6 +23,7 @@ const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
     const [staffId, setStaffId] = useState(transactionToEdit?.staffId);
 
     const categories = type === TransactionType.INCOME ? incomeCategories : expenseCategories;
+    const isConstructionExpense = category === 'Construction' && type === TransactionType.EXPENSE;
     
     // Reset category if type changes and selected category is not valid
     useEffect(() => {
@@ -93,10 +94,20 @@ const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
                             </select>
                         </div>
                         <div>
-                            <label htmlFor="project" className="block text-sm font-medium text-gray-300 mb-1">Project (Optional)</label>
-                            <select id="project" value={projectId || ''} onChange={e => setProjectId(e.target.value ? parseInt(e.target.value) : undefined)} className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white">
-                                <option value="">None</option>
-                                {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                            <label htmlFor="project" className="block text-sm font-medium text-gray-300 mb-1">
+                                Project {isConstructionExpense ? <span className="text-red-400">(Required)</span> : '(Optional)'}
+                            </label>
+                            <select 
+                                id="project" 
+                                value={projectId || ''} 
+                                onChange={e => setProjectId(e.target.value ? parseInt(e.target.value) : undefined)} 
+                                required={isConstructionExpense}
+                                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white"
+                            >
+                                <option value="">{isConstructionExpense ? 'Select a construction project' : 'None'}</option>
+                                {projects
+                                    .filter(p => isConstructionExpense ? p.projectType === 'Construction' : true)
+                                    .map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                             </select>
                         </div>
                     </div>

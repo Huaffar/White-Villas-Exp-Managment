@@ -4,6 +4,8 @@ import { StaffMember, Transaction, StaffStatus, TransactionType, AdminProfile } 
 import PaySalaryModal from './PaySalaryModal';
 import StaffFormModal from './StaffFormModal';
 import InvoiceViewerModal from './InvoiceViewerModal';
+// FIX: Import the TrashIcon for the delete button.
+import { TrashIcon } from './IconComponents';
 
 interface StaffCashManagementProps {
     staff: StaffMember[];
@@ -11,20 +13,22 @@ interface StaffCashManagementProps {
     onSaveStaff: (staff: StaffMember) => void;
     onAddTransaction: (transaction: Omit<Transaction, 'id' | 'balance'>) => void;
     onViewProfile: (staffMember: StaffMember) => void;
+    // FIX: Add onDeleteStaff to the component's props.
+    onDeleteStaff: (staffMember: StaffMember) => void;
     adminProfile: AdminProfile;
 }
 
-const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transactions, onSaveStaff, onAddTransaction, onViewProfile, adminProfile }) => {
+const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transactions, onSaveStaff, onAddTransaction, onViewProfile, onDeleteStaff, adminProfile }) => {
     const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
     const [isPayModalOpen, setPayModalOpen] = useState(false);
     const [isStaffModalOpen, setStaffModalOpen] = useState(false);
     const [editingStaff, setEditingStaff] = useState<StaffMember | undefined>(undefined);
     const [invoiceToView, setInvoiceToView] = useState<{staff: StaffMember, transaction: Transaction} | null>(null);
 
-    const handlePaySalaryAndShowInvoice = (staffMember: StaffMember, amount: number, remarks: string) => {
+    const handlePaySalaryAndShowInvoice = (staffMember: StaffMember, amount: number, remarks: string, paymentDate: string) => {
         const salaryTransactionData: Omit<Transaction, 'id' | 'balance'> = {
-            date: new Date().toISOString().split('T')[0],
-            details: `Salary: ${remarks || new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}`,
+            date: paymentDate,
+            details: `Salary: ${remarks || new Date(paymentDate).toLocaleString('default', { month: 'long', year: 'numeric' })}`,
             category: 'Salaries',
             type: TransactionType.EXPENSE,
             amount,
@@ -114,18 +118,28 @@ const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transa
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-center">
-                                            <button 
-                                                onClick={() => { setSelectedStaff(s); setPayModalOpen(true); }}
-                                                className="font-medium text-green-400 hover:text-green-300 mr-4"
-                                            >
-                                                Pay
-                                            </button>
-                                            <button 
-                                                onClick={() => { setEditingStaff(s); setStaffModalOpen(true); }}
-                                                className="font-medium text-blue-400 hover:text-blue-300"
-                                            >
-                                                Edit
-                                            </button>
+                                            {/* FIX: Add a container for action buttons, including the new Delete button. */}
+                                            <div className="flex items-center justify-center gap-4">
+                                                <button 
+                                                    onClick={() => { setSelectedStaff(s); setPayModalOpen(true); }}
+                                                    className="font-medium text-green-400 hover:text-green-300"
+                                                >
+                                                    Pay
+                                                </button>
+                                                <button 
+                                                    onClick={() => { setEditingStaff(s); setStaffModalOpen(true); }}
+                                                    className="font-medium text-blue-400 hover:text-blue-300"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => onDeleteStaff(s)}
+                                                    className="text-red-500 hover:text-red-400"
+                                                    title="Delete Staff"
+                                                >
+                                                    <TrashIcon className="w-4 h-4" />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 )

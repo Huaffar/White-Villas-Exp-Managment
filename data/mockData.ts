@@ -26,15 +26,19 @@ export const mockExpenseCategories: Category[] = [
     { id: 6, name: 'Marketing' },
     { id: 7, name: 'Travel' },
     { id: 8, name: 'Project Materials' },
-    { id: 9, name: 'Other' },
+    { id: 9, name: 'Construction' },
+    { id: 10, name: 'Other' },
 ];
 
 
+// FIX: Add 'projectType' and 'constructionType' to each project object to support the Construction Hub feature.
 export const mockProjects: Project[] = [
-    { id: 1, name: 'Villa Renovation', clientName: 'Mr. Khan', budget: 5000000, startDate: '2023-01-15', status: ProjectStatus.COMPLETED },
-    { id: 2, name: 'Commercial Plaza Design', clientName: 'Builders Inc.', budget: 2500000, startDate: '2023-03-01', status: ProjectStatus.ONGOING },
-    { id: 3, name: 'Landscaping Project', clientName: 'Green Gardens', budget: 1000000, startDate: '2023-05-20', status: ProjectStatus.ONGOING },
-    { id: 4, name: 'Apartment Complex Blueprint', clientName: 'Realty Group', budget: 1500000, startDate: '2023-08-01', status: ProjectStatus.PLANNED },
+    { id: 1, name: 'Villa Renovation', clientName: 'Mr. Khan', budget: 5000000, startDate: '2023-01-15', status: ProjectStatus.COMPLETED, projectType: 'Construction', constructionType: 'House' },
+    { id: 2, name: 'Commercial Plaza Design', clientName: 'Builders Inc.', budget: 2500000, startDate: '2023-03-01', status: ProjectStatus.ONGOING, projectType: 'General' },
+    { id: 3, name: 'Landscaping Project', clientName: 'Green Gardens', budget: 1000000, startDate: '2023-05-20', status: ProjectStatus.ONGOING, projectType: 'Construction', constructionType: 'Other' },
+    { id: 4, name: 'Apartment Complex Blueprint', clientName: 'Realty Group', budget: 1500000, startDate: '2023-08-01', status: ProjectStatus.PLANNED, projectType: 'General' },
+    { id: 5, name: 'Luxury Apartment Finishing', clientName: 'Prestige Homes', budget: 8000000, startDate: '2023-07-10', status: ProjectStatus.ONGOING, projectType: 'Construction', constructionType: 'Apartment' },
+
 ];
 
 export const mockStaff: StaffMember[] = [
@@ -63,6 +67,11 @@ const rawTransactions: Omit<Transaction, 'id' | 'balance'>[] = [
     // Project 3
     { date: '2023-05-22', details: 'Payment for Landscaping project', category: 'Project Payment', type: TransactionType.INCOME, amount: 500000, projectId: 3 },
     
+    // Project 5 (New Apartment)
+    { date: '2023-07-12', details: 'Initial payment for Apartment Finishing', category: 'Project Payment', type: TransactionType.INCOME, amount: 4000000, projectId: 5 },
+    { date: '2023-07-15', details: 'Purchase of tiles and flooring', category: 'Construction', type: TransactionType.EXPENSE, amount: 1200000, projectId: 5 },
+    { date: '2023-07-20', details: 'Electrical wiring and fixtures', category: 'Construction', type: TransactionType.EXPENSE, amount: 750000, projectId: 5 },
+
     // General Expenses
     { date: '2023-01-31', details: 'Salary for Jan 2023', category: 'Salaries', type: TransactionType.EXPENSE, amount: 150000, staffId: 1 },
     { date: '2023-02-28', details: 'Salary for Feb 2023', category: 'Salaries', type: TransactionType.EXPENSE, amount: 150000, staffId: 1 },

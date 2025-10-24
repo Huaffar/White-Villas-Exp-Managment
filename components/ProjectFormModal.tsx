@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Project, ProjectStatus } from '../types';
 
@@ -14,6 +13,9 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ project, onSave, on
   const [budget, setBudget] = useState(project?.budget.toString() || '');
   const [startDate, setStartDate] = useState(project?.startDate || new Date().toISOString().split('T')[0]);
   const [status, setStatus] = useState<ProjectStatus>(project?.status || ProjectStatus.PLANNED);
+  const [projectType, setProjectType] = useState<'Construction' | 'General'>(project?.projectType || 'General');
+  const [constructionType, setConstructionType] = useState<'House' | 'Apartment' | 'Other' | undefined>(project?.constructionType);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +26,8 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ project, onSave, on
       budget: parseFloat(budget),
       startDate,
       status,
+      projectType,
+      constructionType: projectType === 'Construction' ? (constructionType || 'Other') : undefined,
     };
     onSave(newProject);
   };
@@ -59,6 +63,24 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ project, onSave, on
                 </select>
             </div>
            </div>
+           <div>
+            <label htmlFor="projectType" className="block text-sm font-medium text-gray-300 mb-1">Project Type</label>
+            <select id="projectType" value={projectType} onChange={e => setProjectType(e.target.value as 'Construction' | 'General')} className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-yellow-500 focus:border-yellow-500">
+                <option value="General">General</option>
+                <option value="Construction">Construction</option>
+            </select>
+          </div>
+          {projectType === 'Construction' && (
+            <div>
+              <label htmlFor="constructionType" className="block text-sm font-medium text-gray-300 mb-1">Construction Type</label>
+              <select id="constructionType" value={constructionType || ''} onChange={e => setConstructionType(e.target.value as 'House' | 'Apartment' | 'Other')} required className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-yellow-500 focus:border-yellow-500">
+                  <option value="" disabled>Select a type</option>
+                  <option value="House">House</option>
+                  <option value="Apartment">Apartment</option>
+                  <option value="Other">Other</option>
+              </select>
+            </div>
+          )}
           <div className="flex justify-end gap-4 pt-4">
             <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-500">Cancel</button>
             <button type="submit" className="px-4 py-2 bg-yellow-500 text-gray-900 font-bold rounded-lg hover:bg-yellow-400">{project ? 'Save Changes' : 'Add Project'}</button>

@@ -1,96 +1,95 @@
+
 import React from 'react';
-import { DashboardIcon, TransactionsIcon, ProjectsIcon, StaffIcon, SettingsIcon, ChevronLeftIcon, ChevronRightIcon } from './IconComponents';
+import { DashboardIcon, AddIcon, HistoryIcon, ProjectsIcon, StaffIcon, ReportsIcon, SettingsIcon, ExpenseIcon, BuildingIcon } from './IconComponents';
 import { AdminProfile } from '../types';
 
 interface SidebarProps {
-  currentView: string;
-  onNavigate: (view: string) => void;
-  isCollapsed: boolean;
-  setCollapsed: (isCollapsed: boolean) => void;
-  isMobileOpen: boolean;
-  adminProfile: AdminProfile;
+    currentPage: string;
+    onNavigate: (page: string) => void;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
-const NavItem: React.FC<{
-  icon: React.ReactNode;
-  label: string;
-  isActive: boolean;
-  isCollapsed: boolean;
-  onClick: () => void;
-}> = ({ icon, label, isActive, isCollapsed, onClick }) => (
-  <li
-    onClick={onClick}
-    className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
-      isActive ? 'primary-bg text-gray-900' : 'text-gray-300 hover:bg-gray-700'
-    }`}
-  >
-    {icon}
-    <span className={`ml-4 font-semibold transition-opacity duration-200 ${isCollapsed ? 'opacity-0 hidden' : 'opacity-100'}`}>{label}</span>
-  </li>
+const NavLink: React.FC<{
+    icon: React.ReactNode;
+    label: string;
+    isActive: boolean;
+    onClick: () => void;
+}> = ({ icon, label, isActive, onClick }) => (
+    <li>
+        <button
+            onClick={onClick}
+            className={`flex items-center w-full p-3 my-1 rounded-lg transition-colors duration-200 ${isActive ? 'primary-bg text-gray-900 font-bold' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}`}
+        >
+            <span className="w-6 h-6 mr-3">{icon}</span>
+            <span>{label}</span>
+        </button>
+    </li>
 );
 
-const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isCollapsed, setCollapsed, isMobileOpen, adminProfile }) => {
-  const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: <DashboardIcon className="w-6 h-6" /> },
-    { id: 'transactions', label: 'Transactions', icon: <TransactionsIcon className="w-6 h-6" /> },
-    { id: 'projects', label: 'Projects', icon: <ProjectsIcon className="w-6 h-6" /> },
-    { id: 'staff', label: 'Staff', icon: <StaffIcon className="w-6 h-6" /> },
-    { id: 'settings', label: 'Settings', icon: <SettingsIcon className="w-6 h-6" /> },
-  ];
+const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate, isOpen, onClose }) => {
 
-  const sidebarClasses = `bg-gray-800 text-white flex flex-col shrink-0 transition-all duration-300 ease-in-out h-full z-40`;
-  const desktopClasses = `hidden md:flex ${isCollapsed ? 'w-20' : 'w-64'}`;
-  const mobileClasses = `fixed md:hidden ${isMobileOpen ? 'w-64' : 'w-0 overflow-hidden'}`;
+    const navItems = [
+        { id: 'dashboard', label: 'Dashboard', icon: <DashboardIcon /> },
+        { id: 'add-transaction', label: 'Add Transaction', icon: <AddIcon /> },
+        { id: 'history', label: 'History', icon: <HistoryIcon /> },
+    ];
+    
+    const managementItems = [
+        { id: 'projects', label: 'Projects', icon: <ProjectsIcon /> },
+        { id: 'staff', label: 'Staff', icon: <StaffIcon /> },
+        { id: 'reports', label: 'Reports', icon: <ReportsIcon /> },
+    ];
 
-  const SidebarContent = () => (
-    <>
-      <div className={`flex items-center mb-10 p-3 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
-        {!isCollapsed && adminProfile.logoUrl && (
-          <img src={adminProfile.logoUrl} alt="Logo" className="h-10 w-auto"/>
-        )}
-        {!isCollapsed && (
-            <span className="text-xl font-bold primary-text">{adminProfile.companyName.split(' ')[0]}</span>
-        )}
-      </div>
-      <nav className="flex-grow px-2">
-        <ul className="space-y-3">
-          {navItems.map(item => (
-            <NavItem
-              key={item.id}
-              label={item.label}
-              icon={item.icon}
-              isActive={currentView === item.id}
-              isCollapsed={isCollapsed}
-              onClick={() => onNavigate(item.id)}
-            />
-          ))}
-        </ul>
-      </nav>
-      <div className="p-2">
-        <div className={`flex items-center p-3 rounded-lg bg-gray-900/50 ${isCollapsed ? 'justify-center' : ''}`}>
-             <img src={adminProfile.logoUrl || "https://i.imgur.com/gcy8O2D.png"} alt="Admin" className="w-8 h-8 rounded-full" />
-            {!isCollapsed && <span className="ml-3 text-sm font-semibold">{adminProfile.name}</span>}
-        </div>
-      </div>
-      <button onClick={() => setCollapsed(!isCollapsed)} className="hidden md:block p-2 text-gray-400 hover:text-white absolute bottom-20 -right-3 bg-gray-700 rounded-full">
-        {isCollapsed ? <ChevronRightIcon className="w-5 h-5" /> : <ChevronLeftIcon className="w-5 h-5" />}
-      </button>
-    </>
-  );
+    const hubs = [
+        { id: 'expense-hub', label: 'Expense Hub', icon: <ExpenseIcon /> },
+        { id: 'construction-hub', label: 'Construction Hub', icon: <BuildingIcon /> },
+    ];
 
-  return (
-    <>
-        {/* Desktop Sidebar */}
-        <aside className={`${sidebarClasses} ${desktopClasses}`}>
-            <SidebarContent />
-        </aside>
+    const settingsItem = { id: 'settings', label: 'Settings', icon: <SettingsIcon /> };
 
-        {/* Mobile Sidebar Overlay */}
-        <aside className={`${sidebarClasses} ${mobileClasses}`}>
-            <SidebarContent />
-        </aside>
-    </>
-  );
+    return (
+        <>
+            {/* Overlay for mobile */}
+            <div
+                className={`fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                onClick={onClose}
+            ></div>
+
+            <aside className={`fixed top-0 left-0 w-64 h-full bg-gray-800 text-white flex flex-col z-40 transform transition-transform md:relative md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <div className="flex items-center justify-center h-16 border-b border-gray-700 shrink-0">
+                    <h1 className="text-2xl font-bold primary-text">Acct<span className="text-white">Pro</span></h1>
+                </div>
+                <nav className="flex-1 p-4 overflow-y-auto">
+                    <ul className="space-y-1">
+                        {navItems.map(item => (
+                            <NavLink key={item.id} {...item} isActive={currentPage === item.id} onClick={() => onNavigate(item.id)} />
+                        ))}
+                    </ul>
+
+                     <p className="px-3 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Management</p>
+                     <ul className="space-y-1">
+                        {managementItems.map(item => (
+                            <NavLink key={item.id} {...item} isActive={currentPage.startsWith(item.id)} onClick={() => onNavigate(item.id)} />
+                        ))}
+                    </ul>
+                    
+                    <p className="px-3 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Hubs</p>
+                     <ul className="space-y-1">
+                        {hubs.map(item => (
+                            <NavLink key={item.id} {...item} isActive={currentPage === item.id} onClick={() => onNavigate(item.id)} />
+                        ))}
+                    </ul>
+
+                </nav>
+                 <div className="p-4 border-t border-gray-700">
+                    <ul>
+                        <NavLink {...settingsItem} isActive={currentPage === settingsItem.id} onClick={() => onNavigate(settingsItem.id)} />
+                    </ul>
+                </div>
+            </aside>
+        </>
+    );
 };
 
 export default Sidebar;

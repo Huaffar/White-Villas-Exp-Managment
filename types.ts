@@ -1,4 +1,3 @@
-// FIX: Added full content for types.ts to define data structures for the application.
 export enum TransactionType {
     INCOME = 'INCOME',
     EXPENSE = 'EXPENSE',
@@ -34,6 +33,8 @@ export interface Project {
     budget: number;
     startDate: string; // YYYY-MM-DD
     status: ProjectStatus;
+    projectType: 'Construction' | 'General';
+    constructionType?: 'House' | 'Apartment' | 'Other';
 }
 
 export enum StaffStatus {

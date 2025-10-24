@@ -4,17 +4,18 @@ import { StaffMember, Transaction } from '../types';
 interface PaySalaryModalProps {
   staffMember: StaffMember;
   lastPayment: Transaction | null;
-  onPay: (staffMember: StaffMember, amount: number, remarks: string) => void;
+  onPay: (staffMember: StaffMember, amount: number, remarks: string, paymentDate: string) => void;
   onClose: () => void;
 }
 
 const PaySalaryModal: React.FC<PaySalaryModalProps> = ({ staffMember, lastPayment, onPay, onClose }) => {
   const [amount, setAmount] = useState(staffMember.salary.toString());
   const [remarks, setRemarks] = useState('');
+  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onPay(staffMember, parseFloat(amount), remarks);
+    onPay(staffMember, parseFloat(amount), remarks, paymentDate);
   };
 
   return (
@@ -43,18 +44,31 @@ const PaySalaryModal: React.FC<PaySalaryModalProps> = ({ staffMember, lastPaymen
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="amount" className="block text-sm font-medium text-gray-300 mb-1">Payment Amount (PKR)</label>
-            <input 
-                type="number" 
-                id="amount" 
-                value={amount} 
-                onChange={e => setAmount(e.target.value)} 
-                required 
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white text-lg focus:ring-yellow-500 focus:border-yellow-500" 
-            />
-            <p className="text-xs text-gray-500 mt-1">Adjust amount for bonuses, commissions, or deductions.</p>
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label htmlFor="paymentDate" className="block text-sm font-medium text-gray-300 mb-1">Payment Date</label>
+                    <input 
+                        type="date" 
+                        id="paymentDate" 
+                        value={paymentDate} 
+                        onChange={e => setPaymentDate(e.target.value)} 
+                        required 
+                        className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-yellow-500 focus:border-yellow-500" 
+                    />
+                </div>
+                <div>
+                    <label htmlFor="amount" className="block text-sm font-medium text-gray-300 mb-1">Payment Amount (PKR)</label>
+                    <input 
+                        type="number" 
+                        id="amount" 
+                        value={amount} 
+                        onChange={e => setAmount(e.target.value)} 
+                        required 
+                        className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white text-lg focus:ring-yellow-500 focus:border-yellow-500" 
+                    />
+                </div>
+            </div>
+            
           <div>
             <label htmlFor="remarks" className="block text-sm font-medium text-gray-300 mb-1">Remarks (Optional)</label>
             <textarea 
@@ -65,6 +79,7 @@ const PaySalaryModal: React.FC<PaySalaryModalProps> = ({ staffMember, lastPaymen
                 placeholder="e.g., October bonus included"
                 className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-yellow-500 focus:border-yellow-500"
             ></textarea>
+             <p className="text-xs text-gray-500 mt-1">Adjust amount for bonuses, commissions, or deductions.</p>
           </div>
           
           <div className="flex justify-end gap-4 pt-4">
