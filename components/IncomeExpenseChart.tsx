@@ -8,22 +8,23 @@ interface ChartProps {
 }
 
 const IncomeExpenseChart: React.FC<ChartProps> = ({ data }) => {
+    // FIX: Corrected sorting logic to ensure chart data is chronological.
     const processDataForChart = (transactions: Transaction[]) => {
         const dailyData: { [key: string]: { date: string; income: number; expense: number } } = {};
 
         transactions.forEach(t => {
-            const date = new Date(t.date).toLocaleDateString('en-CA'); // YYYY-MM-DD format
-            if (!dailyData[date]) {
-                dailyData[date] = { date: new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), income: 0, expense: 0 };
+            const dateKey = new Date(t.date).toLocaleDateString('en-CA'); // YYYY-MM-DD format for sorting
+            if (!dailyData[dateKey]) {
+                dailyData[dateKey] = { date: new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), income: 0, expense: 0 };
             }
             if (t.type === TransactionType.INCOME) {
-                dailyData[date].income += t.amount;
+                dailyData[dateKey].income += t.amount;
             } else {
-                dailyData[date].expense += t.amount;
+                dailyData[dateKey].expense += t.amount;
             }
         });
 
-        return Object.values(dailyData).sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        return Object.keys(dailyData).sort().map(dateKey => dailyData[dateKey]);
     }
 
     const chartData = processDataForChart(data);

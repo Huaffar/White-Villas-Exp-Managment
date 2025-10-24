@@ -11,18 +11,19 @@ interface ChartProps {
 }
 
 const DashboardLineChart: React.FC<ChartProps> = ({ transactions, title, dataKey, color }) => {
+    // FIX: Corrected sorting logic to ensure chart data is chronological.
     const processDataForChart = (trans: Transaction[]) => {
         const dailyData: { [key: string]: { date: string; amount: number } } = {};
 
         trans.forEach(t => {
-            const date = new Date(t.date).toLocaleDateString('en-CA'); // YYYY-MM-DD format
-            if (!dailyData[date]) {
-                dailyData[date] = { date: new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), amount: 0 };
+            const dateKey = new Date(t.date).toLocaleDateString('en-CA'); // YYYY-MM-DD format for sorting
+            if (!dailyData[dateKey]) {
+                dailyData[dateKey] = { date: new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), amount: 0 };
             }
-            dailyData[date].amount += t.amount;
+            dailyData[dateKey].amount += t.amount;
         });
-
-        return Object.values(dailyData).sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        
+        return Object.keys(dailyData).sort().map(dateKey => dailyData[dateKey]);
     }
 
     const chartData = processDataForChart(transactions);
