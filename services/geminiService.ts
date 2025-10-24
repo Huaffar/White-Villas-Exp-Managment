@@ -1,15 +1,8 @@
-
 import { GoogleGenAI, Modality } from "@google/genai";
 
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
-    // In a real app, you'd handle this more gracefully.
-    // For this environment, we assume API_KEY is set.
-    console.warn("API_KEY is not set in environment variables.");
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY! });
+// FIX: Initialize GoogleGenAI client directly as per guidelines.
+// The API key is expected to be available in the environment variables.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
 
 /**
  * Edits an image using a text prompt with Gemini 2.5 Flash Image.
