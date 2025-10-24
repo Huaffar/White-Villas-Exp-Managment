@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>White Villas Accounting Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "recharts": "https://aistudiocdn.com/recharts@^3.3.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.27.0"
+  }
+}
+</script>
+  <style>
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body * {
+        visibility: hidden;
+      }
+      #printable-invoice, #printable-invoice *,
+      #printable-report, #printable-report * {
+        visibility: visible;
+      }
+      #printable-invoice, #printable-report {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
+    /* Light Theme Overrides */
+    .light body {
+      background-color: #f3f4f6; /* bg-gray-100 */
+      color: #1f2937; /* text-gray-800 */
+    }
+    .light .bg-gray-900 { background-color: #f3f4f6; } /* main bg */
+    .light .text-gray-100 { color: #1f2937; } /* main text */
+    .light .bg-gray-800 { background-color: #ffffff; } /* card bg */
+    .light .border-gray-700 { border-color: #d1d5db; } /* card borders */
+    .light .text-white { color: #111827; } /* titles */
+    .light .text-gray-300 { color: #4b5563; } /* secondary text */
+    .light .text-gray-400 { color: #6b7280; } /* tertiary text */
+    .light .hover\:bg-gray-700:hover { background-color: #f3f4f6; } /* sidebar hover */
+    .light .bg-gray-700 { background-color: #e5e7eb; } /* table head */
+    .light .bg-gray-900 { background-color: #f9fafb; } /* input bg */
+    .light .border-gray-600 { border-color: #d1d5db; } /* input border */
+    .light .hover\:bg-gray-600\/50:hover { background-color: rgba(243, 244, 246, 0.5); }
+    .light #recharts_measurement_span { color: #1f2937; }
+    .light .recharts-text { fill: #374151; }
+    .light .recharts-legend-item-text { color: #374151 !important; }
+
+  </style>
+</head>
+  <body class="bg-gray-900 text-gray-100">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
