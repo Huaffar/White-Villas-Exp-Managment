@@ -1,5 +1,14 @@
 // FIX: Added full content for mockData.ts to provide sample data for the application.
-import { Transaction, TransactionType, Project, ProjectStatus, StaffMember, StaffStatus, Category } from '../types';
+import { Transaction, TransactionType, Project, ProjectStatus, StaffMember, StaffStatus, Category, AdminProfile } from '../types';
+
+export const initialAdminProfile: AdminProfile = {
+    name: "Admin User",
+    companyName: "White Villas Lahore",
+    logoUrl: "https://i.imgur.com/gcy8O2D.png", // A sample logo
+    contact: "0300-1234567",
+    location: "Lahore, Pakistan",
+    themeColor: "234 88 12", // Default yellow-500
+};
 
 export const mockIncomeCategories: Category[] = [
     { id: 1, name: 'Project Payment' },
@@ -29,10 +38,10 @@ export const mockProjects: Project[] = [
 ];
 
 export const mockStaff: StaffMember[] = [
-    { id: 1, name: 'Ahmed Ali', position: 'Project Manager', salary: 150000, joiningDate: '2022-02-01', contact: '0300-1234567', status: StaffStatus.ACTIVE },
-    { id: 2, name: 'Fatima Zahra', position: 'Architect', salary: 120000, joiningDate: '2022-05-10', contact: '0321-7654321', status: StaffStatus.ACTIVE },
-    { id: 3, name: 'Bilal Hassan', position: 'Accountant', salary: 90000, joiningDate: '2022-07-20', contact: '0333-1122334', status: StaffStatus.ACTIVE },
-    { id: 4, name: 'Sana Javed', position: 'Intern Architect', salary: 40000, joiningDate: '2023-06-01', contact: '0345-5566778', status: StaffStatus.ACTIVE },
+    { id: 1, name: 'Ahmed Ali', position: 'Project Manager', salary: 150000, joiningDate: '2022-02-01', contact: '0300-1234567', status: StaffStatus.ACTIVE, imageUrl: 'https://i.imgur.com/Q9qFt8x.jpeg', phone: '923001234567' },
+    { id: 2, name: 'Fatima Zahra', position: 'Architect', salary: 120000, joiningDate: '2022-05-10', contact: '0321-7654321', status: StaffStatus.ACTIVE, imageUrl: 'https://i.imgur.com/A2szH2Z.jpeg', phone: '923217654321' },
+    { id: 3, name: 'Bilal Hassan', position: 'Accountant', salary: 90000, joiningDate: '2022-07-20', contact: '0333-1122334', status: StaffStatus.ACTIVE, imageUrl: 'https://i.imgur.com/o2k7d7v.jpeg', phone: '923331122334' },
+    { id: 4, name: 'Sana Javed', position: 'Intern Architect', salary: 40000, joiningDate: '2023-06-01', contact: '0345-5566778', status: StaffStatus.ACTIVE, phone: '923455566778' },
 ];
 
 

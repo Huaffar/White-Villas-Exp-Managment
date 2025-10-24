@@ -1,16 +1,18 @@
-
 import React from 'react';
+import { MenuIcon } from './IconComponents';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+    title: string;
+    onMenuClick: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ title, onMenuClick }) => {
   return (
-    <header className="bg-gray-800 p-4 shadow-md flex justify-between items-center">
-      <h1 className="text-xl font-bold text-white">White Villas Accounting Pro</h1>
-      <div>
-        {/* Placeholder for user profile/actions */}
-        <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-gray-900 font-bold">
-          A
-        </div>
-      </div>
+    <header className="bg-gray-800 p-4 shadow-md flex items-center shrink-0 h-16 z-30">
+        <button onClick={onMenuClick} className="md:hidden p-2 mr-2 text-gray-300 hover:text-white">
+            <MenuIcon className="w-6 h-6" />
+        </button>
+      <h1 className="text-xl font-bold text-white">{title}</h1>
     </header>
   );
 };

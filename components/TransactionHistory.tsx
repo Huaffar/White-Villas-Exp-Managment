@@ -1,15 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { Transaction, TransactionType, Category } from '../types';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
-import { ChevronDownIcon } from './IconComponents';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ChevronDownIcon, PencilIcon } from './IconComponents';
 
 interface TransactionHistoryProps {
   transactions: Transaction[];
   incomeCategories: Category[];
   expenseCategories: Category[];
+  // FIX: Added onEditTransaction prop to handle editing.
+  onEditTransaction: (transaction: Transaction) => void;
 }
 
-const CategoryGroup: React.FC<{category: string, transactions: Transaction[]}> = ({ category, transactions }) => {
+const CategoryGroup: React.FC<{category: string, transactions: Transaction[], onEdit: (t: Transaction) => void}> = ({ category, transactions, onEdit }) => {
     const [isOpen, setIsOpen] = useState(false);
     const total = transactions.reduce((sum, t) => sum + t.amount, 0);
     const type = transactions[0]?.type;
@@ -37,6 +39,7 @@ const CategoryGroup: React.FC<{category: string, transactions: Transaction[]}> =
                             <th scope="col" className="px-6 py-3">Details</th>
                             <th scope="col" className="px-6 py-3 text-right">Amount</th>
                             <th scope="col" className="px-6 py-3 text-right">Balance</th>
+                            <th scope="col" className="px-6 py-3 text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -50,6 +53,11 @@ const CategoryGroup: React.FC<{category: string, transactions: Transaction[]}> =
                                 <td className={`px-6 py-4 text-right ${t.balance >= 0 ? 'text-blue-300' : 'text-red-500'}`}>
                                 {t.balance.toLocaleString()}
                                 </td>
+                                <td className="px-6 py-4 text-center">
+                                    <button onClick={() => onEdit(t)} className="text-blue-400 hover:text-blue-300">
+                                        <PencilIcon className="w-4 h-4" />
+                                    </button>
+                                </td>
                             </tr>
                             ))}
                         </tbody>
@@ -60,7 +68,7 @@ const CategoryGroup: React.FC<{category: string, transactions: Transaction[]}> =
     )
 }
 
-const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transactions, incomeCategories, expenseCategories }) => {
+const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transactions, incomeCategories, expenseCategories, onEditTransaction }) => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     
@@ -106,7 +114,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transactions, i
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold text-yellow-400">Transaction History & Analysis</h1>
+      <h1 className="text-3xl font-bold primary-text">Transaction History & Analysis</h1>
       
        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold text-white mb-4">Category Comparison</h3>
@@ -148,14 +156,14 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transactions, i
                 >
                     {allCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                 </select>
-                <button onClick={() => setSelectedCategories([])} className="text-xs text-yellow-400 mt-1">Clear Selection</button>
+                <button onClick={() => setSelectedCategories([])} className="text-xs primary-text mt-1">Clear Selection</button>
             </div>
           </div>
       </div>
       
       <div className="space-y-4">
         {Object.entries(groupedTransactions).map(([category, transactions]) => (
-            <CategoryGroup key={category} category={category} transactions={transactions} />
+            <CategoryGroup key={category} category={category} transactions={transactions} onEdit={onEditTransaction} />
         ))}
       </div>
     </div>

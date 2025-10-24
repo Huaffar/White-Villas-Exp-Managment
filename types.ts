@@ -49,6 +49,17 @@ export interface StaffMember {
     joiningDate: string; // YYYY-MM-DD
     contact: string;
     status: StaffStatus;
+    imageUrl?: string;
+    phone?: string;
+}
+
+export interface AdminProfile {
+    name: string;
+    companyName: string;
+    logoUrl?: string;
+    contact: string;
+    location: string;
+    themeColor: string;
 }
 
 // For reports, etc.
