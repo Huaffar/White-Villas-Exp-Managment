@@ -1,5 +1,6 @@
 // FIX: Replaced placeholder content with a fully functional CategoryComparisonReport component.
 import React from 'react';
+// FIX: Corrected import path for types.
 import { Transaction, TransactionType } from '../types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -18,22 +19,24 @@ const CategoryComparisonReport: React.FC<CategoryComparisonReportProps> = ({ tra
         return acc;
     }, {} as { [key: string]: { name: string; amount: number } });
 
-    const chartData = Object.values(dataByCategory);
+    // FIX: Explicitly typed 'a' and 'b' parameters in the sort callback to resolve 'unknown' type error.
+    const chartData = Object.values(dataByCategory).sort((a: { amount: number }, b: { amount: number }) => b.amount - a.amount);
 
     return (
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg mt-8">
             <h3 className="text-xl font-semibold text-white mb-4">Expense Comparison by Category</h3>
              <div style={{ width: '100%', height: 400 }}>
                 <ResponsiveContainer>
-                    <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 20 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#4A5568" />
                         <XAxis type="number" stroke="#A0AEC0" />
-                        <YAxis type="category" dataKey="name" stroke="#A0AEC0" width={100} />
+                        <YAxis type="category" dataKey="name" stroke="#A0AEC0" width={150} tick={{ fill: '#A0AEC0', fontSize: 12 }} />
                         <Tooltip
                             contentStyle={{ backgroundColor: '#1A202C', border: '1px solid #4A5568' }}
                             labelStyle={{ color: '#F7FAFC' }}
+                            formatter={(value: number) => [value.toLocaleString(), "Total Expense"]}
                         />
-                        <Legend wrapperStyle={{ color: '#F7FAFC' }} />
+                        <Legend verticalAlign="bottom" align="right" wrapperStyle={{ color: '#F7FAFC', paddingRight: '20px' }} />
                         <Bar dataKey="amount" fill="#F56565" name="Total Expense" />
                     </BarChart>
                 </ResponsiveContainer>

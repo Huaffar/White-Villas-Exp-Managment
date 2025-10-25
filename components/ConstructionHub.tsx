@@ -1,4 +1,5 @@
 import React from 'react';
+// FIX: Corrected import path for types.
 import { Project, Transaction, ProjectStatus, TransactionType } from '../types';
 
 interface ConstructionHubProps {

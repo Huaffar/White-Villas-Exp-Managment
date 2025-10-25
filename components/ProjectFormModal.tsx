@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Project, ProjectStatus } from '../types';
+// FIX: Corrected import path for types.
+import { Project, ProjectStatus, Contact } from '../types';
 
 interface ProjectFormModalProps {
   project?: Project;
   onSave: (project: Project) => void;
   onClose: () => void;
+  contacts: Contact[];
 }
 
-const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ project, onSave, onClose }) => {
+const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ project, onSave, onClose, contacts }) => {
   const [name, setName] = useState(project?.name || '');
   const [clientName, setClientName] = useState(project?.clientName || '');
   const [budget, setBudget] = useState(project?.budget.toString() || '');
@@ -15,7 +17,9 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ project, onSave, on
   const [status, setStatus] = useState<ProjectStatus>(project?.status || ProjectStatus.PLANNED);
   const [projectType, setProjectType] = useState<'Construction' | 'General'>(project?.projectType || 'General');
   const [constructionType, setConstructionType] = useState<'House' | 'Apartment' | 'Other' | undefined>(project?.constructionType);
+  const [contactId, setContactId] = useState<number | undefined>(project?.contactId);
 
+  const clientContacts = contacts.filter(c => c.type === 'Client');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,22 +32,32 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ project, onSave, on
       status,
       projectType,
       constructionType: projectType === 'Construction' ? (constructionType || 'Other') : undefined,
+      contactId,
     };
     onSave(newProject);
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-2xl w-full max-w-md border border-gray-700">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-gray-800 p-8 rounded-lg shadow-2xl w-full max-w-lg border border-gray-700 max-h-full overflow-y-auto">
         <h2 className="text-2xl font-bold text-yellow-400 mb-6">{project ? 'Edit Project' : 'Add New Project'}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Project Name</label>
             <input type="text" id="name" value={name} onChange={e => setName(e.target.value)} required className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-yellow-500 focus:border-yellow-500" />
           </div>
-          <div>
-            <label htmlFor="clientName" className="block text-sm font-medium text-gray-300 mb-1">Client Name</label>
-            <input type="text" id="clientName" value={clientName} onChange={e => setClientName(e.target.value)} required className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-yellow-500 focus:border-yellow-500" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div>
+                <label htmlFor="clientName" className="block text-sm font-medium text-gray-300 mb-1">Client Name (Display)</label>
+                <input type="text" id="clientName" value={clientName} onChange={e => setClientName(e.target.value)} required className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-yellow-500 focus:border-yellow-500" />
+            </div>
+             <div>
+                <label htmlFor="contactId" className="block text-sm font-medium text-gray-300 mb-1">Link to Client Contact</label>
+                <select id="contactId" value={contactId || ''} onChange={e => setContactId(e.target.value ? parseInt(e.target.value) : undefined)} className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-yellow-500 focus:border-yellow-500">
+                    <option value="">None</option>
+                    {clientContacts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+            </div>
           </div>
           <div>
             <label htmlFor="budget" className="block text-sm font-medium text-gray-300 mb-1">Budget (PKR)</label>

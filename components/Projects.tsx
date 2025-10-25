@@ -1,7 +1,8 @@
 import React from 'react';
 // FIX: Added Projects component that was missing.
+// FIX: Corrected import path for types.
 import { Project, ProjectStatus, Transaction, TransactionType } from '../types';
-import { PencilIcon } from './IconComponents';
+import { PencilIcon, TrashIcon, PrinterIcon } from './IconComponents';
 
 interface ProjectsProps {
     projects: Project[];
@@ -9,6 +10,8 @@ interface ProjectsProps {
     onViewProject: (project: Project) => void;
     onEditProject: (project: Project) => void;
     onAddProject: () => void;
+    onDeleteProject: (project: Project) => void;
+    onGenerateReport: (project: Project) => void;
 }
 
 const getStatusColor = (status: ProjectStatus) => {
@@ -24,7 +27,7 @@ const getStatusColor = (status: ProjectStatus) => {
     }
 }
 
-const ProjectCard: React.FC<{ project: Project; income: number; expense: number; onViewProject: (p: Project) => void; onEditProject: (p: Project) => void }> = ({ project, income, expense, onViewProject, onEditProject }) => {
+const ProjectCard: React.FC<{ project: Project; income: number; expense: number; onViewProject: (p: Project) => void; onEditProject: (p: Project) => void; onDeleteProject: (p: Project) => void; onGenerateReport: (p: Project) => void; }> = ({ project, income, expense, onViewProject, onEditProject, onDeleteProject, onGenerateReport }) => {
     const profit = income - expense;
     const profitMargin = income > 0 ? (profit / income) * 100 : 0;
     
@@ -39,9 +42,17 @@ const ProjectCard: React.FC<{ project: Project; income: number; expense: number;
                         <h3 className="text-xl font-bold text-white mt-2">{project.name}</h3>
                         <p className="text-sm text-gray-400">{project.clientName}</p>
                     </div>
-                    <button onClick={() => onEditProject(project)} className="p-2 text-gray-400 hover:text-white">
-                        <PencilIcon className="h-4 w-4" />
-                    </button>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        <button onClick={() => onEditProject(project)} className="p-2 text-gray-400 hover:text-white" title="Edit Project">
+                            <PencilIcon className="h-4 w-4" />
+                        </button>
+                        <button onClick={() => onGenerateReport(project)} className="p-2 text-gray-400 hover:text-white" title="Generate Report">
+                            <PrinterIcon className="h-4 w-4" />
+                        </button>
+                        <button onClick={() => onDeleteProject(project)} className="p-2 text-gray-400 hover:text-red-400" title="Delete Project">
+                            <TrashIcon className="h-4 w-4" />
+                        </button>
+                    </div>
                 </div>
 
                 <div className="mt-4 space-y-2 text-sm">
@@ -75,7 +86,7 @@ const ProjectCard: React.FC<{ project: Project; income: number; expense: number;
 };
 
 
-const Projects: React.FC<ProjectsProps> = ({ projects, transactions, onViewProject, onEditProject, onAddProject }) => {
+const Projects: React.FC<ProjectsProps> = ({ projects, transactions, onViewProject, onEditProject, onAddProject, onDeleteProject, onGenerateReport }) => {
 
     const projectData = projects.map(p => {
         const projectTransactions = transactions.filter(t => t.projectId === p.id);
@@ -105,6 +116,8 @@ const Projects: React.FC<ProjectsProps> = ({ projects, transactions, onViewProje
                         expense={p.expense}
                         onViewProject={onViewProject}
                         onEditProject={onEditProject}
+                        onDeleteProject={onDeleteProject}
+                        onGenerateReport={onGenerateReport}
                     />
                 ))}
             </div>

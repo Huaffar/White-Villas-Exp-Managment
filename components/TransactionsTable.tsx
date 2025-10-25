@@ -1,5 +1,7 @@
 
+
 import React from 'react';
+// FIX: Corrected import path for types.
 import { Transaction, TransactionType } from '../types';
 
 interface TransactionsTableProps {

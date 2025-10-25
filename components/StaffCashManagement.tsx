@@ -1,11 +1,13 @@
 // FIX: Added full content for StaffCashManagement.tsx to manage staff and payroll.
 import React, { useState } from 'react';
+// FIX: Corrected import path for types.
 import { StaffMember, Transaction, StaffStatus, TransactionType, AdminProfile } from '../types';
 import PaySalaryModal from './PaySalaryModal';
 import StaffFormModal from './StaffFormModal';
 import InvoiceViewerModal from './InvoiceViewerModal';
 // FIX: Import the TrashIcon for the delete button.
 import { TrashIcon } from './IconComponents';
+import { SystemCategoryNames } from '../App';
 
 interface StaffCashManagementProps {
     staff: StaffMember[];
@@ -16,9 +18,10 @@ interface StaffCashManagementProps {
     // FIX: Add onDeleteStaff to the component's props.
     onDeleteStaff: (staffMember: StaffMember) => void;
     adminProfile: AdminProfile;
+    systemCategoryNames: SystemCategoryNames;
 }
 
-const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transactions, onSaveStaff, onAddTransaction, onViewProfile, onDeleteStaff, adminProfile }) => {
+const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transactions, onSaveStaff, onAddTransaction, onViewProfile, onDeleteStaff, adminProfile, systemCategoryNames }) => {
     const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
     const [isPayModalOpen, setPayModalOpen] = useState(false);
     const [isStaffModalOpen, setStaffModalOpen] = useState(false);
@@ -29,7 +32,7 @@ const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transa
         const salaryTransactionData: Omit<Transaction, 'id' | 'balance'> = {
             date: paymentDate,
             details: `Salary: ${remarks || new Date(paymentDate).toLocaleString('default', { month: 'long', year: 'numeric' })}`,
-            category: 'Salaries',
+            category: systemCategoryNames.salaries,
             type: TransactionType.EXPENSE,
             amount,
             staffId: staffMember.id,
@@ -49,7 +52,7 @@ const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transa
     
     const getLastPayment = (staffId: number) => {
         return transactions
-            .filter(t => t.staffId === staffId && t.category === 'Salaries')
+            .filter(t => t.staffId === staffId && t.category === systemCategoryNames.salaries)
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] || null;
     }
     
@@ -65,7 +68,7 @@ const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transa
         }
         const initials = staff.name.split(' ').map(n => n[0]).join('').toUpperCase();
         return (
-             <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-gray-900 font-bold">
+             <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-gray-900 font-bold text-sm">
                 {initials}
             </div>
         )

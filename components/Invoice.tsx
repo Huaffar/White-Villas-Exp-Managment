@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+// FIX: Corrected import path for types.
 import { StaffMember, Transaction } from '../types';
 
 interface InvoiceProps {

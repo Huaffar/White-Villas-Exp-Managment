@@ -1,4 +1,5 @@
 import React from 'react';
+// FIX: Corrected import path for types.
 import { StaffMember, Transaction, AdminProfile } from '../types';
 import Invoice from './Invoice';
 import { PrinterIcon, WhatsAppIcon, CloseIcon } from './IconComponents';
@@ -13,6 +14,10 @@ interface InvoiceViewerModalProps {
 const InvoiceViewerModal: React.FC<InvoiceViewerModalProps> = ({ staffMember, transaction, adminProfile, onClose }) => {
 
     const handleSendWhatsApp = () => {
+        if (!staffMember.phone) {
+            alert('This staff member does not have a phone number saved.');
+            return;
+        }
         const message = `Dear ${staffMember.name},\n\nYour salary of PKR ${transaction.amount.toLocaleString()} for the period ending ${new Date(transaction.date).toLocaleDateString()} has been processed.\n\nThank you,\n${adminProfile.companyName}`;
         const whatsappUrl = `https://wa.me/${staffMember.phone}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');

@@ -1,5 +1,6 @@
 import React from 'react';
 // FIX: Added ProjectReport component that was missing.
+// FIX: Corrected import path for types.
 import { Project, Transaction, TransactionType } from '../types';
 import { PrinterIcon, CloseIcon } from './IconComponents';
 

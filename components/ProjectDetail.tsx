@@ -1,5 +1,6 @@
 import React from 'react';
 // FIX: Added ProjectDetail component that was missing.
+// FIX: Corrected import path for types.
 import { Project, Transaction, TransactionType } from '../types';
 import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
 

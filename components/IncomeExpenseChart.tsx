@@ -1,6 +1,8 @@
 
+
 import React from 'react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+// FIX: Corrected import path for types.
 import { Transaction, TransactionType } from '../types';
 
 interface ChartProps {

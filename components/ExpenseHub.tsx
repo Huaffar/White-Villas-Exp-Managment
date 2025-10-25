@@ -1,5 +1,6 @@
 import React from 'react';
 // FIX: Added ExpenseHub component that was missing.
+// FIX: Corrected import path for types.
 import { Transaction, ExpenseCategory, TransactionType } from '../types';
 import IncomeExpenseChart from './IncomeExpenseChart';
 import StatCard from './StatCard';

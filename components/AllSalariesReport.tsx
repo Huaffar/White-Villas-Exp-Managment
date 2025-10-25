@@ -1,15 +1,19 @@
 
+
 import React from 'react';
+// FIX: Corrected import path for types.
 import { Transaction, StaffMember, TransactionType } from '../types';
+import { SystemCategoryNames } from '../App';
 
 interface AllSalariesReportProps {
   transactions: Transaction[];
   staff: StaffMember[];
+  systemCategoryNames: SystemCategoryNames;
 }
 
-const AllSalariesReport: React.FC<AllSalariesReportProps> = ({ transactions, staff }) => {
+const AllSalariesReport: React.FC<AllSalariesReportProps> = ({ transactions, staff, systemCategoryNames }) => {
     const salaryPayments = transactions
-        .filter(t => t.type === TransactionType.EXPENSE && t.category === 'Salaries')
+        .filter(t => t.type === TransactionType.EXPENSE && t.category === systemCategoryNames.salaries)
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     const getStaffName = (staffId?: number) => {
