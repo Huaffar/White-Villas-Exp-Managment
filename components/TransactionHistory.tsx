@@ -118,6 +118,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transactions, i
     }, [transactions, startDate, endDate, selectedCategories, sortBy, searchTerm]);
 
     const groupedTransactions = useMemo(() => {
+        // FIX: Provide an explicit type for the initial value of reduce to prevent type errors.
         return filteredTransactions.reduce((acc, t) => {
             (acc[t.category] = acc[t.category] || []).push(t);
             return acc;
@@ -240,7 +241,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transactions, i
     <div className="space-y-8">
       <div className="no-print bg-gray-800 p-4 rounded-lg shadow-lg space-y-4 border-2 border-blue-500">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-            <h1 className="text-3xl font-bold primary-text">Transaction History & Analysis</h1>
+            <h1 className="text-3xl font-bold primary-text">General Ledger</h1>
             <div className="flex gap-2">
                  <button onClick={handleExportCSV} className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white font-semibold text-sm rounded-lg hover:bg-green-500">
                     <DownloadIcon className="w-5 h-5" /> Export to CSV

@@ -7,6 +7,7 @@ import StaffFormModal from './StaffFormModal';
 import InvoiceViewerModal from './InvoiceViewerModal';
 // FIX: Import the TrashIcon for the delete button.
 import { TrashIcon } from './IconComponents';
+// FIX: Corrected import path for App to get SystemCategoryNames.
 import { SystemCategoryNames } from '../App';
 
 interface StaffCashManagementProps {
@@ -18,7 +19,8 @@ interface StaffCashManagementProps {
     // FIX: Add onDeleteStaff to the component's props.
     onDeleteStaff: (staffMember: StaffMember) => void;
     adminProfile: AdminProfile;
-    systemCategoryNames: SystemCategoryNames;
+    // FIX: Use `typeof SystemCategoryNames` to correctly type the prop based on the imported object value.
+    systemCategoryNames: typeof SystemCategoryNames;
 }
 
 const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transactions, onSaveStaff, onAddTransaction, onViewProfile, onDeleteStaff, adminProfile, systemCategoryNames }) => {

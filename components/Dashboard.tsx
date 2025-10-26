@@ -1,43 +1,48 @@
-
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 // FIX: Corrected import path for types.
 import { Transaction, TransactionType } from '../types';
 import StatCard from './StatCard';
-import { BalanceIcon, IncomeIcon, ExpenseIcon, ProfitIcon, AdjustmentsHorizontalIcon } from './IconComponents';
+import { BalanceIcon, IncomeIcon, ExpenseIcon, ProfitIcon, AdjustmentsHorizontalIcon, PaintBrushIcon } from './IconComponents';
 import IncomeExpenseChart from './IncomeExpenseChart';
 import DashboardHistoryCard from './DashboardHistoryCard';
 import DashboardLineChart from './DashboardLineChart';
 import DashboardLayoutModal from './DashboardLayoutModal';
+import ThemeSwitcherModal, { Theme } from './ThemeSwitcherModal';
+import useLocalStorage from '../hooks/useLocalStorage';
 
 
 interface DashboardProps {
   transactions: Transaction[];
+  themes: Theme[];
+  activeThemeName: string;
+  onSetTheme: (themeName: string) => void;
 }
 
-export interface LayoutConfig {
-  incomeExpense: number;
-  incomeTrend: number;
-  expenseTrend: number;
-  ownerPayment: number;
+export interface DashboardWidget {
+  id: 'incomeExpense' | 'incomeTrend' | 'expenseTrend' | 'ownerPayment' | 'recentIncome' | 'recentExpenses';
+  name: string;
+  isVisible: boolean;
+  size: 1 | 2;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ transactions }) => {
-  const [isLayoutModalOpen, setLayoutModalOpen] = useState(false);
+const defaultWidgets: DashboardWidget[] = [
+    { id: 'incomeExpense', name: 'Income vs Expense Chart', isVisible: true, size: 2 },
+    { id: 'incomeTrend', name: 'Income Trend Chart', isVisible: true, size: 1 },
+    { id: 'expenseTrend', name: 'Expense Trend Chart', isVisible: true, size: 1 },
+    { id: 'ownerPayment', name: 'Owner Payments Chart', isVisible: true, size: 1 },
+    { id: 'recentIncome', name: 'Recent Income', isVisible: true, size: 1 },
+    { id: 'recentExpenses', name: 'Recent Expenses', isVisible: true, size: 1 },
+];
+
+
+const Dashboard: React.FC<DashboardProps> = ({ transactions, themes, activeThemeName, onSetTheme }) => {
+  const [isLayoutModalOpen, setLayoutModalOpen] = useState(true);
+  const [isThemeModalOpen, setThemeModalOpen] = useState(false);
   
-  const [layout, setLayout] = useState<LayoutConfig>(() => {
-      const savedLayout = localStorage.getItem('dashboardLayoutConfig');
-      return savedLayout ? JSON.parse(savedLayout) : {
-          incomeExpense: 2, // Full width
-          incomeTrend: 1,   // Half width
-          expenseTrend: 1,  // Half width
-          ownerPayment: 1,  // Half width
-      };
-  });
+  const [widgets, setWidgets] = useLocalStorage<DashboardWidget[]>('dashboardWidgetsConfig', defaultWidgets);
 
-  const handleSaveLayout = (newLayout: LayoutConfig) => {
-      localStorage.setItem('dashboardLayoutConfig', JSON.stringify(newLayout));
-      setLayout(newLayout);
+  const handleSaveLayout = (newWidgets: DashboardWidget[]) => {
+      setWidgets(newWidgets);
   };
   
   const totalIncome = transactions
@@ -58,18 +63,36 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions }) => {
   const incomeTransactions = transactions.filter(t => t.type === TransactionType.INCOME);
   const expenseTransactions = transactions.filter(t => t.type === TransactionType.EXPENSE);
   const amountOutTransactions = transactions.filter(t => t.type === TransactionType.AMOUNT_OUT);
+  
+  const componentMap: Record<DashboardWidget['id'], React.ReactNode> = {
+    incomeExpense: <IncomeExpenseChart data={transactions} />,
+    incomeTrend: <DashboardLineChart transactions={incomeTransactions} title="Income" dataKey="income" color="#48BB78" />,
+    expenseTrend: <DashboardLineChart transactions={expenseTransactions} title="Expense" dataKey="expense" color="#F56565" />,
+    ownerPayment: <DashboardLineChart transactions={amountOutTransactions} title="Owner Payments" dataKey="expense" color="#FBBF24" />,
+    recentIncome: <DashboardHistoryCard title="Recent Income" transactions={incomeTransactions} type={TransactionType.INCOME} />,
+    recentExpenses: <DashboardHistoryCard title="Recent Expenses" transactions={expenseTransactions} type={TransactionType.EXPENSE} />,
+  };
 
   return (
     <div className="space-y-8">
        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-yellow-400">Dashboard</h1>
-          <button
-              onClick={() => setLayoutModalOpen(true)}
-              className="flex items-center gap-2 px-3 py-2 bg-gray-700 text-white font-semibold text-sm rounded-lg hover:bg-gray-600 transition-colors"
-          >
-              <AdjustmentsHorizontalIcon className="w-5 h-5" />
-              Customize Layout
-          </button>
+          <h1 className="text-3xl font-bold text-accent">Dashboard</h1>
+          <div className="flex items-center gap-2">
+            <button
+                onClick={() => setThemeModalOpen(true)}
+                className="flex items-center gap-2 px-3 py-2 bg-background-tertiary text-text-strong font-semibold text-sm rounded-lg hover:bg-background-tertiary-hover transition-colors"
+            >
+                <PaintBrushIcon className="w-5 h-5" />
+                Switch Theme
+            </button>
+            <button
+                onClick={() => setLayoutModalOpen(true)}
+                className="flex items-center gap-2 px-3 py-2 bg-background-tertiary text-text-strong font-semibold text-sm rounded-lg hover:bg-background-tertiary-hover transition-colors"
+            >
+                <AdjustmentsHorizontalIcon className="w-5 h-5" />
+                Customize Layout
+            </button>
+          </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -100,30 +123,27 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions }) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className={`lg:col-span-${layout.incomeExpense}`}>
-          <IncomeExpenseChart data={transactions} />
-        </div>
-        <div className={`lg:col-span-${layout.incomeTrend}`}>
-          <DashboardLineChart transactions={incomeTransactions} title="Income" dataKey="income" color="#48BB78" />
-        </div>
-        <div className={`lg:col-span-${layout.expenseTrend}`}>
-          <DashboardLineChart transactions={expenseTransactions} title="Expense" dataKey="expense" color="#F56565" />
-        </div>
-        <div className={`lg:col-span-${layout.ownerPayment}`}>
-          <DashboardLineChart transactions={amountOutTransactions} title="Owner Payments" dataKey="expense" color="#FBBF24" />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <DashboardHistoryCard title="Recent Income" transactions={incomeTransactions} type={TransactionType.INCOME} />
-        <DashboardHistoryCard title="Recent Expenses" transactions={expenseTransactions} type={TransactionType.EXPENSE} />
+        {widgets.filter(w => w.isVisible).map(widget => (
+          <div key={widget.id} className={`lg:col-span-${widget.size}`}>
+            {componentMap[widget.id]}
+          </div>
+        ))}
       </div>
 
       {isLayoutModalOpen && (
         <DashboardLayoutModal
-          currentLayout={layout}
+          widgets={widgets}
           onSave={handleSaveLayout}
           onClose={() => setLayoutModalOpen(false)}
+        />
+      )}
+
+      {isThemeModalOpen && (
+        <ThemeSwitcherModal
+            themes={themes}
+            activeThemeName={activeThemeName}
+            onSetTheme={onSetTheme}
+            onClose={() => setThemeModalOpen(false)}
         />
       )}
     </div>

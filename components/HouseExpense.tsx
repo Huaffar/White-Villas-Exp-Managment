@@ -8,7 +8,8 @@ import { SystemCategoryNames } from '../App';
 interface HouseExpenseProps {
     transactions: Transaction[];
     adminProfile: AdminProfile;
-    systemCategoryNames: SystemCategoryNames;
+    // FIX: Use `typeof SystemCategoryNames` to correctly type the prop based on the imported object value.
+    systemCategoryNames: typeof SystemCategoryNames;
 }
 
 const HouseExpense: React.FC<HouseExpenseProps> = ({ transactions, adminProfile, systemCategoryNames }) => {

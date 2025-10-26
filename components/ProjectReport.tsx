@@ -1,23 +1,54 @@
 import React from 'react';
-// FIX: Added ProjectReport component that was missing.
-// FIX: Corrected import path for types.
 import { Project, Transaction, TransactionType } from '../types';
 import { PrinterIcon, CloseIcon } from './IconComponents';
+import { SystemCategoryNames } from '../App';
 
 interface ProjectReportProps {
   project: Project;
   transactions: Transaction[];
   onClose: () => void;
+  systemCategoryNames: typeof SystemCategoryNames;
 }
 
-const ProjectReport: React.FC<ProjectReportProps> = ({ project, transactions, onClose }) => {
+const ProjectReport: React.FC<ProjectReportProps> = ({ project, transactions, onClose, systemCategoryNames }) => {
     
     const incomeTransactions = transactions.filter(t => t.type === TransactionType.INCOME);
-    const expenseTransactions = transactions.filter(t => t.type === TransactionType.EXPENSE);
+    const materialTransactions = transactions.filter(t => t.category === systemCategoryNames.constructionMaterial);
+    const laborTransactions = transactions.filter(t => t.category === systemCategoryNames.constructionLabor);
+    const otherExpenseTransactions = transactions.filter(t => 
+        t.type === TransactionType.EXPENSE && 
+        t.category !== systemCategoryNames.constructionMaterial && 
+        t.category !== systemCategoryNames.constructionLabor
+    );
 
     const totalIncome = incomeTransactions.reduce((acc, t) => acc + t.amount, 0);
-    const totalExpense = expenseTransactions.reduce((acc, t) => acc + t.amount, 0);
+    const totalMaterial = materialTransactions.reduce((acc, t) => acc + t.amount, 0);
+    const totalLabor = laborTransactions.reduce((acc, t) => acc + t.amount, 0);
+    const totalOther = otherExpenseTransactions.reduce((acc, t) => acc + t.amount, 0);
+    const totalExpense = totalMaterial + totalLabor + totalOther;
     const profit = totalIncome - totalExpense;
+    
+    const TransactionTable: React.FC<{title: string, data: Transaction[], isExpense?: boolean}> = ({ title, data, isExpense = false }) => (
+        <div className="mb-6 break-inside-avoid">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">{title}</h3>
+            <table className="w-full text-sm">
+                <thead className="bg-gray-200">
+                    <tr>
+                        <th className="p-2 text-left">Date</th>
+                        <th className="p-2 text-left">Details</th>
+                        <th className="p-2 text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.map(t => (
+                        <tr key={t.id} className="border-b"><td className="p-2">{new Date(t.date).toLocaleDateString()}</td><td className="p-2">{t.details}</td><td className="p-2 text-right">{t.amount.toLocaleString()}</td></tr>
+                    ))}
+                    {data.length === 0 && <tr><td colSpan={3} className="text-center p-4 text-gray-500">No transactions in this category.</td></tr>}
+                </tbody>
+                {data.length > 0 && <tfoot><tr className="font-bold"><td colSpan={2} className="p-2 text-right">Subtotal</td><td className="p-2 text-right bg-gray-100">{data.reduce((s, t) => s + t.amount, 0).toLocaleString()}</td></tr></tfoot>}
+            </table>
+        </div>
+    );
 
     return (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-90 z-50 flex flex-col items-center p-4">
@@ -50,44 +81,15 @@ const ProjectReport: React.FC<ProjectReportProps> = ({ project, transactions, on
                         </div>
                     </div>
                     
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2 mt-8">Income Transactions</h3>
-                    <table className="w-full text-sm">
-                        <thead className="bg-gray-200">
-                            <tr>
-                                <th className="p-2 text-left">Date</th>
-                                <th className="p-2 text-left">Details</th>
-                                <th className="p-2 text-right">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {incomeTransactions.map(t => (
-                                <tr key={t.id} className="border-b"><td className="p-2">{new Date(t.date).toLocaleDateString()}</td><td className="p-2">{t.details}</td><td className="p-2 text-right">{t.amount.toLocaleString()}</td></tr>
-                            ))}
-                        </tbody>
-                        <tfoot><tr className="font-bold"><td colSpan={2} className="p-2 text-right">Total Income</td><td className="p-2 text-right bg-gray-200">{totalIncome.toLocaleString()}</td></tr></tfoot>
-                    </table>
-                    
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2 mt-8">Expense Transactions</h3>
-                    <table className="w-full text-sm">
-                        <thead className="bg-gray-200">
-                            <tr>
-                                <th className="p-2 text-left">Date</th>
-                                <th className="p-2 text-left">Details</th>
-                                <th className="p-2 text-right">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                             {expenseTransactions.map(t => (
-                                <tr key={t.id} className="border-b"><td className="p-2">{new Date(t.date).toLocaleDateString()}</td><td className="p-2">{t.details}</td><td className="p-2 text-right">{t.amount.toLocaleString()}</td></tr>
-                            ))}
-                        </tbody>
-                         <tfoot><tr className="font-bold"><td colSpan={2} className="p-2 text-right">Total Expense</td><td className="p-2 text-right bg-gray-200">{totalExpense.toLocaleString()}</td></tr></tfoot>
-                    </table>
+                    <TransactionTable title="Income Transactions" data={incomeTransactions} />
+                    <TransactionTable title="Material Costs" data={materialTransactions} isExpense />
+                    <TransactionTable title="Labor Costs" data={laborTransactions} isExpense />
+                    <TransactionTable title="Other Expenses" data={otherExpenseTransactions} isExpense />
 
-                    <div className="mt-8 pt-4 border-t-2 border-black grid grid-cols-3">
-                        <div>&nbsp;</div>
-                        <div className="text-right font-bold">Total Profit / Loss:</div>
-                        <div className={`text-right font-bold text-xl ${profit >= 0 ? '' : 'text-red-600'}`}>PKR {profit.toLocaleString()}</div>
+                    <div className="mt-8 pt-4 border-t-2 border-black space-y-2">
+                         <div className="flex justify-between text-md"><span className="font-semibold">Total Income:</span> <span className="font-semibold">PKR {totalIncome.toLocaleString()}</span></div>
+                         <div className="flex justify-between text-md"><span className="font-semibold">Total Expense:</span> <span className="font-semibold">PKR {totalExpense.toLocaleString()}</span></div>
+                         <div className={`flex justify-between text-xl font-bold border-t border-black mt-2 pt-2 ${profit >= 0 ? '' : 'text-red-600'}`}><span>Net Profit / Loss:</span> <span>PKR {profit.toLocaleString()}</span></div>
                     </div>
 
                     <div className="text-center text-xs text-gray-500 mt-16 pt-4 border-t">

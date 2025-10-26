@@ -16,10 +16,10 @@ interface AccountManagementProps {
 const CategoryTable: React.FC<{
     title: string, 
     categories: Category[], 
-    type: TransactionType,
+    type: TransactionType | TransactionType.AMOUNT_OUT,
     onEdit: (cat: Category) => void,
     onDelete: (cat: Category) => void,
-    onAdd: (type: TransactionType) => void,
+    onAdd: (type: TransactionType | TransactionType.AMOUNT_OUT) => void,
 }> = ({ title, categories, type, onEdit, onDelete, onAdd }) => (
     <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
         <div className="flex justify-between items-center mb-4">
@@ -43,7 +43,7 @@ const CategoryTable: React.FC<{
                             onClick={() => !cat.systemLink && onDelete(cat)} 
                             className={`${cat.systemLink ? 'text-gray-600 cursor-not-allowed' : 'text-red-500 hover:text-red-400'}`}
                             disabled={!!cat.systemLink}
-                            title={cat.systemLink ? "System categories cannot be deleted. Unlink it first." : "Delete category"}
+                            title={cat.systemLink ? "System categories cannot be deleted." : "Delete category"}
                         >
                             <TrashIcon className="w-4 h-4" />
                         </button>
@@ -64,7 +64,7 @@ const AccountManagement: React.FC<AccountManagementProps> = ({ incomeCategories,
         setModalOpen(true);
     };
 
-    const handleAdd = (type: TransactionType) => {
+    const handleAdd = (type: TransactionType | TransactionType.AMOUNT_OUT) => {
         setEditingCategory({ id: 0, name: '', type });
         setModalOpen(true);
     };

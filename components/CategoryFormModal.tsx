@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// FIX: Corrected import path for types.
 import { Category, TransactionType, SystemLinkType, SystemLinkMap } from '../types';
 
 interface CategoryFormModalProps {
@@ -11,7 +12,7 @@ interface CategoryFormModalProps {
 
 const CategoryFormModal: React.FC<CategoryFormModalProps> = ({ category, onSave, onClose, allIncomeCategories, allExpenseCategories }) => {
   const [name, setName] = useState(category.name);
-  const [type, setType] = useState<TransactionType>(category.type);
+  const [type, setType] = useState<TransactionType | TransactionType.AMOUNT_OUT>(category.type);
   const [systemLink, setSystemLink] = useState<SystemLinkType | undefined>(category.systemLink);
 
   const handleSubmit = (e: React.FormEvent) => {

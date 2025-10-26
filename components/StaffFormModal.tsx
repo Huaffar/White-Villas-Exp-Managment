@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+// FIX: Corrected import path for types.
 import { StaffMember, StaffStatus } from '../types';
 
 interface StaffFormModalProps {
@@ -104,7 +105,8 @@ const StaffFormModal: React.FC<StaffFormModalProps> = ({ staffMember, onSave, on
                         <div>
                             <label htmlFor="status" className="block text-sm font-medium text-gray-300 mb-1">Status</label>
                             <select id="status" value={status} onChange={e => setStatus(e.target.value as StaffStatus)} className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white">
-                                {Object.values(StaffStatus).map(s => <option key={s} value={s}>{s}</option>)}
+                                {/* FIX: Explicitly type the mapped variable `s` to resolve 'unknown' type error. */}
+                                {Object.values(StaffStatus).map((s: StaffStatus) => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
                     </div>

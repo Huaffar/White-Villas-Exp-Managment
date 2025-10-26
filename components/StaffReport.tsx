@@ -2,12 +2,14 @@
 import React from 'react';
 // FIX: Corrected import path for types.
 import { StaffMember, Transaction, TransactionType } from '../types';
+// FIX: Corrected import path for App to get SystemCategoryNames.
 import { SystemCategoryNames } from '../App';
 
 interface StaffReportProps {
   staff: StaffMember[];
   transactions: Transaction[];
-  systemCategoryNames: SystemCategoryNames;
+  // FIX: Use `typeof SystemCategoryNames` to correctly type the prop based on the imported object value.
+  systemCategoryNames: typeof SystemCategoryNames;
 }
 
 const StaffReport: React.FC<StaffReportProps> = ({ staff, transactions, systemCategoryNames }) => {

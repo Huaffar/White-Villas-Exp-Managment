@@ -55,7 +55,8 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ project, onSave, on
                 <label htmlFor="contactId" className="block text-sm font-medium text-gray-300 mb-1">Link to Client Contact</label>
                 <select id="contactId" value={contactId || ''} onChange={e => setContactId(e.target.value ? parseInt(e.target.value) : undefined)} className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-yellow-500 focus:border-yellow-500">
                     <option value="">None</option>
-                    {clientContacts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    {/* FIX: Explicitly type the mapped variable `c` to resolve 'unknown' type error. */}
+                    {clientContacts.map((c: Contact) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
             </div>
           </div>
@@ -71,7 +72,7 @@ const ProjectFormModal: React.FC<ProjectFormModalProps> = ({ project, onSave, on
             <div>
                 <label htmlFor="status" className="block text-sm font-medium text-gray-300 mb-1">Status</label>
                 <select id="status" value={status} onChange={e => setStatus(e.target.value as ProjectStatus)} className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-yellow-500 focus:border-yellow-500">
-                    {Object.values(ProjectStatus).map(s => (
+                    {Object.values(ProjectStatus).map((s: ProjectStatus) => (
                         <option key={s} value={s}>{s}</option>
                     ))}
                 </select>

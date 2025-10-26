@@ -32,24 +32,24 @@ const ProjectCard: React.FC<{ project: Project; income: number; expense: number;
     const profitMargin = income > 0 ? (profit / income) * 100 : 0;
     
     return (
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col justify-between">
+        <div className="bg-background-secondary p-6 rounded-lg shadow-lg flex flex-col justify-between">
             <div>
                 <div className="flex justify-between items-start">
                     <div>
                         <span className={`px-2 py-1 text-xs font-bold text-white rounded-full ${getStatusColor(project.status)}`}>
                             {project.status}
                         </span>
-                        <h3 className="text-xl font-bold text-white mt-2">{project.name}</h3>
-                        <p className="text-sm text-gray-400">{project.clientName}</p>
+                        <h3 className="text-xl font-bold text-text-strong mt-2">{project.name}</h3>
+                        <p className="text-sm text-text-secondary">{project.clientName}</p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                        <button onClick={() => onEditProject(project)} className="p-2 text-gray-400 hover:text-white" title="Edit Project">
+                        <button onClick={() => onEditProject(project)} className="p-2 text-text-secondary hover:text-text-strong" title="Edit Project">
                             <PencilIcon className="h-4 w-4" />
                         </button>
-                        <button onClick={() => onGenerateReport(project)} className="p-2 text-gray-400 hover:text-white" title="Generate Report">
+                        <button onClick={() => onGenerateReport(project)} className="p-2 text-text-secondary hover:text-text-strong" title="Generate Report">
                             <PrinterIcon className="h-4 w-4" />
                         </button>
-                        <button onClick={() => onDeleteProject(project)} className="p-2 text-gray-400 hover:text-red-400" title="Delete Project">
+                        <button onClick={() => onDeleteProject(project)} className="p-2 text-text-secondary hover:text-red-400" title="Delete Project">
                             <TrashIcon className="h-4 w-4" />
                         </button>
                     </div>
@@ -57,19 +57,19 @@ const ProjectCard: React.FC<{ project: Project; income: number; expense: number;
 
                 <div className="mt-4 space-y-2 text-sm">
                     <div className="flex justify-between">
-                        <span className="text-gray-400">Budget:</span>
-                        <span className="font-semibold text-white">PKR {project.budget.toLocaleString()}</span>
+                        <span className="text-text-secondary">Budget:</span>
+                        <span className="font-semibold text-text-strong">PKR {project.budget.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="text-gray-400">Total Income:</span>
+                        <span className="text-text-secondary">Total Income:</span>
                         <span className="font-semibold text-green-400">PKR {income.toLocaleString()}</span>
                     </div>
                      <div className="flex justify-between">
-                        <span className="text-gray-400">Total Expense:</span>
+                        <span className="text-text-secondary">Total Expense:</span>
                         <span className="font-semibold text-red-400">PKR {expense.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between font-bold">
-                        <span className="text-gray-300">Profit:</span>
+                        <span className="text-text-primary">Profit:</span>
                         <span className={profit >= 0 ? 'text-blue-300' : 'text-red-500'}>PKR {profit.toLocaleString()} ({profitMargin.toFixed(1)}%)</span>
                     </div>
                 </div>
@@ -77,7 +77,7 @@ const ProjectCard: React.FC<{ project: Project; income: number; expense: number;
             
             <button
                 onClick={() => onViewProject(project)}
-                className="mt-6 w-full py-2 bg-yellow-500 text-gray-900 font-bold rounded-lg hover:bg-yellow-400 transition-colors duration-200"
+                className="mt-6 w-full py-2 bg-accent text-on-accent font-bold rounded-lg hover:bg-accent-hover transition-colors duration-200"
             >
                 View Details
             </button>
@@ -98,10 +98,10 @@ const Projects: React.FC<ProjectsProps> = ({ projects, transactions, onViewProje
     return (
         <div className="space-y-8">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-yellow-400">Projects</h1>
+                <h1 className="text-3xl font-bold text-accent">Projects</h1>
                 <button
                     onClick={onAddProject}
-                    className="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-gray-900 font-bold text-sm rounded-lg hover:bg-yellow-400 transition-colors duration-200"
+                    className="flex items-center gap-2 px-4 py-2 bg-accent text-on-accent font-bold text-sm rounded-lg hover:bg-accent-hover transition-colors duration-200"
                 >
                     Add New Project
                 </button>

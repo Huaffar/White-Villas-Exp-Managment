@@ -1,77 +1,86 @@
 import React, { useState } from 'react';
-import { LayoutConfig } from './Dashboard';
+import { DashboardWidget } from './Dashboard';
+import { ArrowUpIcon, ArrowDownIcon } from './IconComponents';
 
 interface DashboardLayoutModalProps {
-    currentLayout: LayoutConfig;
-    onSave: (newLayout: LayoutConfig) => void;
+    widgets: DashboardWidget[];
+    onSave: (newWidgets: DashboardWidget[]) => void;
     onClose: () => void;
 }
 
-const LayoutOption: React.FC<{
-    label: string;
-    value: number;
-    onChange: (newValue: number) => void;
-}> = ({ label, value, onChange }) => {
-    return (
-        <div className="flex justify-between items-center bg-gray-700 p-3 rounded-md">
-            <span className="text-white">{label}</span>
-            <div className="flex bg-gray-900 rounded-lg p-1">
-                <button
-                    type="button"
-                    onClick={() => onChange(1)}
-                    className={`px-3 py-1 text-sm rounded-md transition-colors ${value === 1 ? 'bg-yellow-500 text-gray-900 font-semibold' : 'text-gray-300 hover:bg-gray-600'}`}
-                >
-                    Half Width
-                </button>
-                <button
-                    type="button"
-                    onClick={() => onChange(2)}
-                    className={`px-3 py-1 text-sm rounded-md transition-colors ${value === 2 ? 'bg-yellow-500 text-gray-900 font-semibold' : 'text-gray-300 hover:bg-gray-600'}`}
-                >
-                    Full Width
-                </button>
-            </div>
-        </div>
-    );
-};
-
-const DashboardLayoutModal: React.FC<DashboardLayoutModalProps> = ({ currentLayout, onSave, onClose }) => {
-    const [layout, setLayout] = useState(currentLayout);
+const DashboardLayoutModal: React.FC<DashboardLayoutModalProps> = ({ widgets, onSave, onClose }) => {
+    const [localWidgets, setLocalWidgets] = useState(widgets);
 
     const handleSave = () => {
-        onSave(layout);
+        onSave(localWidgets);
         onClose();
+    };
+
+    const handleVisibilityChange = (id: string, isVisible: boolean) => {
+        setLocalWidgets(prev => prev.map(w => w.id === id ? { ...w, isVisible } : w));
+    };
+
+    const handleSizeChange = (id: string, size: 1 | 2) => {
+        setLocalWidgets(prev => prev.map(w => w.id === id ? { ...w, size } : w));
+    };
+
+    const handleMove = (index: number, direction: 'up' | 'down') => {
+        const newWidgets = [...localWidgets];
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+        if (targetIndex < 0 || targetIndex >= newWidgets.length) return;
+
+        [newWidgets[index], newWidgets[targetIndex]] = [newWidgets[targetIndex], newWidgets[index]];
+        setLocalWidgets(newWidgets);
     };
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-            <div className="bg-gray-800 p-8 rounded-lg shadow-2xl w-full max-w-lg border border-gray-700">
-                <h2 className="text-2xl font-bold text-yellow-400 mb-6">Customize Dashboard Layout</h2>
-                <div className="space-y-4">
-                    <LayoutOption
-                        label="Income vs Expense Chart"
-                        value={layout.incomeExpense}
-                        onChange={(v) => setLayout(prev => ({ ...prev, incomeExpense: v }))}
-                    />
-                    <LayoutOption
-                        label="Income Trend Chart"
-                        value={layout.incomeTrend}
-                        onChange={(v) => setLayout(prev => ({ ...prev, incomeTrend: v }))}
-                    />
-                     <LayoutOption
-                        label="Expense Trend Chart"
-                        value={layout.expenseTrend}
-                        onChange={(v) => setLayout(prev => ({ ...prev, expenseTrend: v }))}
-                    />
-                    <LayoutOption
-                        label="Owner Payments Chart"
-                        value={layout.ownerPayment}
-                        onChange={(v) => setLayout(prev => ({ ...prev, ownerPayment: v }))}
-                    />
+            <div className="bg-background-secondary p-8 rounded-lg shadow-2xl w-full max-w-2xl border border-primary max-h-[90vh] flex flex-col">
+                <h2 className="text-2xl font-bold text-accent mb-6">Customize Dashboard Layout</h2>
+                <div className="space-y-3 overflow-y-auto flex-grow pr-2">
+                    {localWidgets.map((widget, index) => (
+                        <div key={widget.id} className="grid grid-cols-12 items-center gap-4 bg-background-tertiary p-3 rounded-md">
+                            <div className="col-span-1">
+                                <input
+                                    type="checkbox"
+                                    checked={widget.isVisible}
+                                    onChange={(e) => handleVisibilityChange(widget.id, e.target.checked)}
+                                    className="w-5 h-5 rounded bg-input border-secondary text-accent focus:ring-accent"
+                                />
+                            </div>
+                            <div className="col-span-5">
+                                <span className="text-text-strong">{widget.name}</span>
+                            </div>
+                            <div className="col-span-4 flex bg-background-primary rounded-lg p-1">
+                                <button
+                                    type="button"
+                                    onClick={() => handleSizeChange(widget.id, 1)}
+                                    className={`w-1/2 px-3 py-1 text-sm rounded-md transition-colors ${widget.size === 1 ? 'bg-accent text-on-accent font-semibold' : 'text-text-primary hover:bg-background-tertiary-hover'}`}
+                                >
+                                    Half
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleSizeChange(widget.id, 2)}
+                                    className={`w-1/2 px-3 py-1 text-sm rounded-md transition-colors ${widget.size === 2 ? 'bg-accent text-on-accent font-semibold' : 'text-text-primary hover:bg-background-tertiary-hover'}`}
+                                >
+                                    Full
+                                </button>
+                            </div>
+                            <div className="col-span-2 flex justify-end gap-2">
+                                <button onClick={() => handleMove(index, 'up')} disabled={index === 0} className="p-2 rounded-md bg-background-tertiary-hover disabled:opacity-30 disabled:cursor-not-allowed">
+                                    <ArrowUpIcon className="w-5 h-5 text-text-strong" />
+                                </button>
+                                <button onClick={() => handleMove(index, 'down')} disabled={index === localWidgets.length - 1} className="p-2 rounded-md bg-background-tertiary-hover disabled:opacity-30 disabled:cursor-not-allowed">
+                                    <ArrowDownIcon className="w-5 h-5 text-text-strong" />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-                <div className="flex justify-end gap-4 pt-8">
-                    <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-500">Cancel</button>
-                    <button type="button" onClick={handleSave} className="px-4 py-2 bg-yellow-500 text-gray-900 font-bold rounded-lg hover:bg-yellow-400">Save Layout</button>
+                <div className="flex justify-end gap-4 pt-8 flex-shrink-0">
+                    <button type="button" onClick={onClose} className="px-6 py-2 bg-background-tertiary text-text-strong font-semibold rounded-lg hover:bg-background-tertiary-hover">Cancel</button>
+                    <button type="button" onClick={handleSave} className="px-6 py-2 bg-accent text-on-accent font-bold rounded-lg hover:bg-accent-hover">Save Layout</button>
                 </div>
             </div>
         </div>

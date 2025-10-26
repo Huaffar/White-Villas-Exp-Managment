@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected import path for types.
 import { Transaction, TransactionType, Category, Project, StaffMember, Laborer } from '../types';
+// FIX: Corrected import path for App to get SystemCategoryNames.
 import { SystemCategoryNames } from '../App';
 
 interface TransactionFormModalProps {
@@ -11,7 +12,8 @@ interface TransactionFormModalProps {
     staff: StaffMember[];
     laborers: Laborer[];
     categories: Category[];
-    systemCategoryNames: SystemCategoryNames;
+    // FIX: Use `typeof SystemCategoryNames` to correctly type the prop based on the imported object value.
+    systemCategoryNames: typeof SystemCategoryNames;
 }
 
 const TransactionFormModal: React.FC<TransactionFormModalProps> = ({ transaction, onSave, onClose, projects, staff, laborers, categories, systemCategoryNames }) => {

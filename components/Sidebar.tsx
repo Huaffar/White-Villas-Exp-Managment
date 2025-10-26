@@ -1,84 +1,190 @@
 import React from 'react';
-import { BalanceIcon, IncomeIcon, UserGroupIcon, ConstructionIcon, ExpenseIcon, PencilIcon, PrinterIcon, CloseIcon, HomeIcon, ArrowUpTrayIcon } from './IconComponents';
-
-type View = 
-    | 'dashboard' | 'addEntry' | 'history' | 'staff' | 'staffProfile'
-    | 'labor' | 'laborProfile' | 'projects' | 'projectDetail' | 'construction' 
-    | 'reports' | 'contacts' | 'accounts' | 'settings' | 'houseExpense'
-    | 'ownerPayments' | 'clientLedger';
+import {
+    View,
+    User,
+    UserRole
+} from '../types';
+import {
+    HomeIcon,
+    UserGroupIcon,
+    DocumentPlusIcon,
+    BookOpenIcon,
+    IdentificationIcon,
+    WrenchScrewdriverIcon,
+    BuildingOffice2Icon,
+    CurrencyDollarIcon,
+    BuildingStorefrontIcon,
+    ChartBarIcon,
+    ClipboardDocumentListIcon,
+    TagIcon,
+    FunnelIcon,
+    CogIcon,
+    UserCircleIcon
+} from './IconComponents';
 
 interface SidebarProps {
     currentView: View;
-    setView: (view: View) => void;
-    isOpen: boolean;
-    setOpen: (isOpen: boolean) => void;
+    onSetView: (view: View) => void;
+    user: User;
+    companyName: string;
+    logoUrl ? : string;
+    isSidebarOpen: boolean;
 }
 
-const NavLink: React.FC<{
+const NavLink: React.FC < {
+    // FIX: Changed icon prop type from React.ReactElement to a more specific type that accepts className to resolve cloneElement error.
+    icon: React.ReactElement<{ className?: string }>;
+    label: string;
     view: View;
     currentView: View;
-    setView: (view: View) => void;
-    icon: React.ReactNode;
-    label: string;
-    onClick: () => void;
-}> = ({ view, currentView, setView, icon, label, onClick }) => (
-    <a
-        href="#"
-        onClick={(e) => {
-            e.preventDefault();
-            setView(view);
-            onClick();
-        }}
-        className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-            currentView === view ? 'primary-bg text-gray-900' : 'text-gray-300 hover:bg-gray-700'
-        }`}
-    >
-        {icon}
-        <span className="ml-3">{label}</span>
-    </a>
-);
-
-const Sidebar: React.FC<SidebarProps> = ({ currentView, setView, isOpen, setOpen }) => {
-    const handleLinkClick = () => {
-        if (window.innerWidth < 768) { // md breakpoint
-            setOpen(false);
-        }
-    };
+    onClick: (view: View) => void;
+} > = ({
+    icon,
+    label,
+    view,
+    currentView,
+    onClick
+}) => {
+    const isActive = currentView === view;
     return (
-        <>
-            <div className={`no-print fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden ${isOpen ? 'block' : 'hidden'}`} onClick={() => setOpen(false)}></div>
-            <aside className={`no-print flex-shrink-0 w-64 bg-gray-800 border-r border-gray-700 flex flex-col transition-transform transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:relative fixed inset-y-0 left-0 z-40`}>
-                <div className="flex items-center justify-between h-16 px-4 border-b border-gray-700">
-                    <span className="text-2xl font-bold text-white">WVA Pro</span>
-                     <button onClick={() => setOpen(false)} className="md:hidden p-2 text-gray-300 hover:text-white">
-                        <CloseIcon className="w-6 h-6" />
-                    </button>
-                </div>
-                <nav className="flex-1 p-4 space-y-2">
-                    <NavLink view="dashboard" currentView={currentView} setView={setView} icon={<BalanceIcon className="w-5 h-5" />} label="Dashboard" onClick={handleLinkClick} />
-                    <NavLink view="addEntry" currentView={currentView} setView={setView} icon={<PencilIcon className="w-5 h-5" />} label="Add Entry" onClick={handleLinkClick} />
-                    <NavLink view="history" currentView={currentView} setView={setView} icon={<IncomeIcon className="w-5 h-5" />} label="History" onClick={handleLinkClick} />
-                    
-                    <p className="px-4 pt-4 pb-2 text-xs font-semibold text-gray-500 uppercase">Management</p>
-                    <NavLink view="clientLedger" currentView={currentView} setView={setView} icon={<IncomeIcon className="w-5 h-5" />} label="Client Ledger" onClick={handleLinkClick} />
-                    <NavLink view="staff" currentView={currentView} setView={setView} icon={<UserGroupIcon className="w-5 h-5" />} label="Staff" onClick={handleLinkClick} />
-                    <NavLink view="labor" currentView={currentView} setView={setView} icon={<UserGroupIcon className="w-5 h-5" />} label="Labor" onClick={handleLinkClick} />
-                    <NavLink view="projects" currentView={currentView} setView={setView} icon={<ConstructionIcon className="w-5 h-5" />} label="Projects" onClick={handleLinkClick} />
-                    <NavLink view="houseExpense" currentView={currentView} setView={setView} icon={<HomeIcon className="w-5 h-5" />} label="House Expense" onClick={handleLinkClick} />
-                    <NavLink view="ownerPayments" currentView={currentView} setView={setView} icon={<ArrowUpTrayIcon className="w-5 h-5" />} label="Owner Payments" onClick={handleLinkClick} />
-                    
-                     <p className="px-4 pt-4 pb-2 text-xs font-semibold text-gray-500 uppercase">Hubs</p>
-                    <NavLink view="construction" currentView={currentView} setView={setView} icon={<ConstructionIcon className="w-5 h-5" />} label="Construction Hub" onClick={handleLinkClick} />
-                    <NavLink view="reports" currentView={currentView} setView={setView} icon={<PrinterIcon className="w-5 h-5" />} label="Reports" onClick={handleLinkClick} />
-                    
-                    <p className="px-4 pt-4 pb-2 text-xs font-semibold text-gray-500 uppercase">Admin</p>
-                    <NavLink view="contacts" currentView={currentView} setView={setView} icon={<UserGroupIcon className="w-5 h-5" />} label="Contacts" onClick={handleLinkClick} />
-                    <NavLink view="accounts" currentView={currentView} setView={setView} icon={<BalanceIcon className="w-5 h-5" />} label="Accounts" onClick={handleLinkClick} />
-                    <NavLink view="settings" currentView={currentView} setView={setView} icon={<PencilIcon className="w-5 h-5" />} label="Settings" onClick={handleLinkClick} />
-                    
-                </nav>
-            </aside>
-        </>
+        // FIX: Corrected malformed JSX tags (e.g., `< span >`) that caused a major parsing error.
+        <button onClick={() => onClick(view)}
+        className={
+            `flex items-center w-full px-4 py-3 text-sm font-semibold transition-colors duration-200 rounded-md my-1 ${
+          isActive
+            ? 'bg-accent text-on-accent'
+            : 'text-text-primary hover:bg-background-tertiary-hover hover:text-text-strong'
+        }`
+        } >
+            {React.cloneElement(icon, {
+                className: 'w-6 h-6 mr-3'
+            })}
+        <span>{label}</span>
+        </button>
+    );
+};
+
+const Sidebar: React.FC < SidebarProps > = ({
+    currentView,
+    onSetView,
+    user,
+    companyName,
+    logoUrl,
+    isSidebarOpen
+}) => {
+
+    // FIX: Explicitly typed the navItems array to ensure item.view is correctly inferred as type `View`.
+    const navItems: Array<{
+        label: string;
+        view: View;
+        // FIX: Updated icon type to match the NavLink component's prop type.
+        icon: React.ReactElement<{ className?: string }>;
+        roles: UserRole[];
+    }> = [{
+        label: 'Dashboard',
+        view: 'dashboard',
+        icon: < HomeIcon / > ,
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.STAFF_ACCOUNTANT, UserRole.CONSTRUCTION_MANAGER]
+    }, {
+        label: 'Add Entry',
+        view: 'addEntry',
+        icon: < DocumentPlusIcon / > ,
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.STAFF_ACCOUNTANT]
+    }, {
+        label: 'Client Ledger',
+        view: 'clientLedger',
+        icon: < IdentificationIcon / > ,
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.STAFF_ACCOUNTANT]
+    }, {
+        label: 'Staff',
+        view: 'staff',
+        icon: < UserGroupIcon / > ,
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.STAFF_ACCOUNTANT]
+    }, {
+        label: 'Labor',
+        view: 'labor',
+        icon: < UserGroupIcon / > ,
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.CONSTRUCTION_MANAGER]
+    }, {
+        label: 'Projects',
+        view: 'projects',
+        icon: < WrenchScrewdriverIcon / > ,
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.STAFF_ACCOUNTANT, UserRole.CONSTRUCTION_MANAGER]
+    }, {
+        label: 'House Expense',
+        view: 'houseExpense',
+        icon: < BuildingOffice2Icon / > ,
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.STAFF_ACCOUNTANT]
+    }, {
+        label: 'Owner Payments',
+        view: 'ownerPayments',
+        icon: < CurrencyDollarIcon / > ,
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.STAFF_ACCOUNTANT]
+    }, {
+        label: 'Construction',
+        view: 'construction',
+        icon: < BuildingStorefrontIcon / > ,
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.CONSTRUCTION_MANAGER]
+    }, {
+        label: 'Reports',
+        view: 'reports',
+        icon: < ChartBarIcon / > ,
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.STAFF_ACCOUNTANT]
+    }, {
+        label: 'Contacts',
+        view: 'contacts',
+        icon: < ClipboardDocumentListIcon / > ,
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.STAFF_ACCOUNTANT]
+    }, {
+        label: 'Accounts',
+        view: 'accounts',
+        icon: < TagIcon / > ,
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN]
+    }, {
+        label: 'Leads',
+        view: 'leads',
+        icon: < FunnelIcon / > ,
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN]
+    }, {
+        label: 'Settings',
+        view: 'settings',
+        icon: < CogIcon / > ,
+        roles: [UserRole.SUPER_ADMIN]
+    }, {
+        label: 'Client Portal',
+        view: 'clientPortal',
+        icon: < UserCircleIcon / > ,
+        roles: [UserRole.CLIENT]
+    }, ];
+
+    const accessibleNavItems = navItems.filter(item => item.roles.includes(user.role));
+
+    // FIX: Corrected malformed JSX tags that were causing parsing errors.
+    return (
+        <aside className={
+            `no-print fixed inset-y-0 left-0 bg-background-secondary text-text-strong w-64 space-y-6 py-7 px-2 transform ${
+        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      } md:relative md:translate-x-0 transition-transform duration-200 ease-in-out flex flex-col z-40 border-r border-primary`
+        }>
+        <div className="px-4">
+        <div className="flex items-center space-x-3">
+            {logoUrl && <img src={logoUrl}
+            alt="Company Logo"
+            className="h-10 w-10" />}
+        <h2 className="text-xl font-bold text-accent">{companyName}</h2>
+        </div>
+        </div>
+        <nav className="flex-grow">
+            {accessibleNavItems.map((item) => (
+                <NavLink key={item.view}
+                icon={item.icon}
+                label={item.label}
+                view={item.view}
+                currentView={currentView}
+                onClick={onSetView} />
+            ))}
+        </nav>
+        </aside>
     );
 };
 

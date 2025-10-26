@@ -12,7 +12,8 @@ interface AddEntryProps {
     expenseCategories: Category[];
     transactions: Transaction[];
     contacts: Contact[];
-    systemCategoryNames: SystemCategoryNames;
+    // FIX: Use `typeof SystemCategoryNames` to correctly type the prop based on the imported object value.
+    systemCategoryNames: typeof SystemCategoryNames;
 }
 
 const AddEntry: React.FC<AddEntryProps> = ({ onAddTransaction, projects, staff, laborers, incomeCategories, expenseCategories, transactions, contacts, systemCategoryNames }) => {

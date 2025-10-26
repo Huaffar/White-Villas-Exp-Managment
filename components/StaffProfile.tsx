@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
+// FIX: Corrected import path for types.
 import { StaffMember, Transaction, AdminProfile } from '../types';
+// FIX: Corrected import path for App to get SystemCategoryNames.
 import { SystemCategoryNames } from '../App';
 import { WhatsAppIcon, PrinterIcon } from './IconComponents';
 import StaffStatement from './StaffStatement';
@@ -9,7 +11,8 @@ interface StaffProfileProps {
   transactions: Transaction[];
   onBack: () => void;
   onAddCommission: () => void;
-  systemCategoryNames: SystemCategoryNames;
+  // FIX: Use `typeof SystemCategoryNames` to correctly type the prop based on the imported object value.
+  systemCategoryNames: typeof SystemCategoryNames;
   adminProfile: AdminProfile;
 }
 

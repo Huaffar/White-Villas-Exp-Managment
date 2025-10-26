@@ -40,8 +40,8 @@ const ContactFormModal: React.FC<ContactFormModalProps> = ({ contact, onSave, on
                             <label className="block text-sm font-medium text-gray-300 mb-1">Phone</label>
                             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} required className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white" />
                         </div>
-                        <div>
-                             <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                         <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
                             <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white" />
                         </div>
                     </div>

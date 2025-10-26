@@ -14,7 +14,8 @@ interface LaborManagementProps {
     onDeleteLaborer: (laborer: Laborer) => void;
     onAddTransaction: (transaction: Omit<Transaction, 'id' | 'balance'>) => void;
     onViewProfile: (laborer: Laborer) => void;
-    systemCategoryNames: SystemCategoryNames;
+    // FIX: Use `typeof SystemCategoryNames` to correctly type the prop based on the imported object value.
+    systemCategoryNames: typeof SystemCategoryNames;
 }
 
 const LaborManagement: React.FC<LaborManagementProps> = ({ laborers, projects, transactions, onSaveLaborer, onDeleteLaborer, onAddTransaction, onViewProfile, systemCategoryNames }) => {

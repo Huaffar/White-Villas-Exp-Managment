@@ -54,7 +54,8 @@ const LaborerFormModal: React.FC<LaborerFormModalProps> = ({ laborer, onSave, on
                          <div>
                             <label htmlFor="status" className="block text-sm font-medium text-gray-300 mb-1">Status</label>
                             <select id="status" value={status} onChange={e => setStatus(e.target.value as LaborerStatus)} className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white">
-                                {Object.values(LaborerStatus).map(s => <option key={s} value={s}>{s}</option>)}
+                                {/* FIX: Explicitly typed the mapped variable `s` to resolve 'unknown' type error. */}
+                                {Object.values(LaborerStatus).map((s: LaborerStatus) => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
                     </div>
