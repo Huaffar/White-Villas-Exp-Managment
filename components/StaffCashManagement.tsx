@@ -1,8 +1,8 @@
 // FIX: Added full content for StaffCashManagement.tsx to manage staff and payroll.
 import React, { useState } from 'react';
 // FIX: Corrected import path for types.
-import { StaffMember, Transaction, StaffStatus, TransactionType, AdminProfile } from '../types';
-import PaySalaryModal from './PaySalaryModal';
+import { StaffMember, Transaction, StaffStatus, TransactionType, AdminProfile, Commission } from '../types';
+import PayStaffModal from './PaySalaryModal';
 import StaffFormModal from './StaffFormModal';
 import InvoiceViewerModal from './InvoiceViewerModal';
 // FIX: Import the TrashIcon for the delete button.
@@ -13,8 +13,10 @@ import { SystemCategoryNames } from '../App';
 interface StaffCashManagementProps {
     staff: StaffMember[];
     transactions: Transaction[];
+    commissions: Commission[];
     onSaveStaff: (staff: StaffMember) => void;
-    onAddTransaction: (transaction: Omit<Transaction, 'id' | 'balance'>) => void;
+    onPaySalary: (transaction: Omit<Transaction, 'id' | 'balance'>) => void;
+    onPayCommission: (staffId: number, commissionIds: number[], paymentData: { date: string, remarks: string, totalAmount: number }) => void;
     onViewProfile: (staffMember: StaffMember) => void;
     // FIX: Add onDeleteStaff to the component's props.
     onDeleteStaff: (staffMember: StaffMember) => void;
@@ -23,7 +25,7 @@ interface StaffCashManagementProps {
     systemCategoryNames: typeof SystemCategoryNames;
 }
 
-const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transactions, onSaveStaff, onAddTransaction, onViewProfile, onDeleteStaff, adminProfile, systemCategoryNames }) => {
+const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transactions, commissions, onSaveStaff, onPaySalary, onPayCommission, onViewProfile, onDeleteStaff, adminProfile, systemCategoryNames }) => {
     const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
     const [isPayModalOpen, setPayModalOpen] = useState(false);
     const [isStaffModalOpen, setStaffModalOpen] = useState(false);
@@ -39,7 +41,7 @@ const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transa
             amount,
             staffId: staffMember.id,
         };
-        onAddTransaction(salaryTransactionData);
+        onPaySalary(salaryTransactionData);
         
         const transactionForInvoice: Transaction = {
             ...salaryTransactionData,
@@ -104,14 +106,18 @@ const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transa
                         <tbody>
                             {staff.map(s => {
                                 const lastPayment = getLastPayment(s.id);
+                                const hasUnpaidCommission = commissions.some(c => c.staffId === s.id && !c.isPaid);
                                 return (
                                     <tr key={s.id} className="border-b border-gray-700 hover:bg-gray-600/50">
                                         <td className="px-6 py-4 font-medium text-white">
                                             <div className="flex items-center gap-4">
                                                 <ProfilePic staff={s} />
-                                                <a href="#" onClick={(e) => { e.preventDefault(); onViewProfile(s); }} className="hover:primary-text">
-                                                    {s.name}
-                                                </a>
+                                                <div className="flex items-center gap-2">
+                                                    <a href="#" onClick={(e) => { e.preventDefault(); onViewProfile(s); }} className="hover:primary-text">
+                                                        {s.name}
+                                                    </a>
+                                                    {hasUnpaidCommission && <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" title="Unpaid Commission"></div>}
+                                                </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">{s.position}</td>
@@ -155,10 +161,15 @@ const StaffCashManagement: React.FC<StaffCashManagementProps> = ({ staff, transa
             </div>
 
             {isPayModalOpen && selectedStaff && (
-                <PaySalaryModal 
+                <PayStaffModal
                     staffMember={selectedStaff}
                     lastPayment={getLastPayment(selectedStaff.id)}
-                    onPay={handlePaySalaryAndShowInvoice}
+                    unpaidCommissions={commissions.filter(c => c.staffId === selectedStaff.id && !c.isPaid)}
+                    onPaySalary={handlePaySalaryAndShowInvoice}
+                    onPayCommission={(commissionIds, paymentData) => {
+                        onPayCommission(selectedStaff.id, commissionIds, paymentData);
+                        setPayModalOpen(false);
+                    }}
                     onClose={() => setPayModalOpen(false)}
                 />
             )}

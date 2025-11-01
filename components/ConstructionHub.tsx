@@ -22,18 +22,18 @@ interface ConstructionHubProps {
 }
 
 const ConstructionHub: React.FC<ConstructionHubProps> = (props) => {
-    const [activeTab, setActiveTab] = useState('inventory');
+    const [activeTab, setActiveTab] = useState('vendors');
 
     const getTabClass = (tabName: string) => 
-        `${activeTab === tabName ? 'border-yellow-400 text-yellow-400' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm transition-colors`;
+        `${activeTab === tabName ? 'border-accent text-accent' : 'border-transparent text-text-secondary hover:text-text-primary hover:border-secondary'} whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm transition-colors`;
 
     return (
         <div className="space-y-8">
             <div className="flex justify-between items-center">
-                 <h1 className="text-3xl font-bold primary-text">Construction Hub</h1>
+                 <h1 className="text-3xl font-bold text-accent">Construction Hub</h1>
             </div>
             
-            <div className="border-b border-gray-700">
+            <div className="border-b border-primary">
                 <nav className="-mb-px flex space-x-6" aria-label="Tabs">
                     <button onClick={() => setActiveTab('inventory')} className={getTabClass('inventory')}>
                         Stock Inventory
@@ -77,6 +77,9 @@ const ConstructionHub: React.FC<ConstructionHubProps> = (props) => {
                         onSaveVendor={props.onSaveVendor}
                         onSaveCategory={props.onSaveVendorCategory}
                         onViewVendor={props.onViewVendor}
+                        stockMovements={props.stockMovements}
+                        materials={props.materials}
+                        projects={props.projects}
                     />
                 )}
                 {activeTab === 'usage' && (
@@ -84,6 +87,7 @@ const ConstructionHub: React.FC<ConstructionHubProps> = (props) => {
                         stockMovements={props.stockMovements}
                         materials={props.materials}
                         projects={props.projects}
+                        materialCategories={props.materialCategories}
                     />
                 )}
             </div>

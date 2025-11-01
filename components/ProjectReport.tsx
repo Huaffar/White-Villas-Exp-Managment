@@ -1,5 +1,5 @@
 import React from 'react';
-import { Project, Transaction, TransactionType } from '../types';
+import { Project, Transaction, TransactionType, AdminProfile } from '../types';
 import { PrinterIcon, CloseIcon } from './IconComponents';
 import { SystemCategoryNames } from '../App';
 
@@ -8,9 +8,10 @@ interface ProjectReportProps {
   transactions: Transaction[];
   onClose: () => void;
   systemCategoryNames: typeof SystemCategoryNames;
+  adminProfile: AdminProfile;
 }
 
-const ProjectReport: React.FC<ProjectReportProps> = ({ project, transactions, onClose, systemCategoryNames }) => {
+const ProjectReport: React.FC<ProjectReportProps> = ({ project, transactions, onClose, systemCategoryNames, adminProfile }) => {
     
     const incomeTransactions = transactions.filter(t => t.type === TransactionType.INCOME);
     const materialTransactions = transactions.filter(t => t.category === systemCategoryNames.constructionMaterial);
@@ -92,7 +93,10 @@ const ProjectReport: React.FC<ProjectReportProps> = ({ project, transactions, on
                          <div className={`flex justify-between text-xl font-bold border-t border-black mt-2 pt-2 ${profit >= 0 ? '' : 'text-red-600'}`}><span>Net Profit / Loss:</span> <span>PKR {profit.toLocaleString()}</span></div>
                     </div>
 
-                    <div className="text-center text-xs text-gray-500 mt-16 pt-4 border-t">
+                    <div className="relative text-center text-xs text-gray-500 mt-16 pt-4 border-t">
+                        {adminProfile.stampUrl && (
+                            <img src={adminProfile.stampUrl} alt="Stamp" className="absolute -top-16 right-0 w-28 h-28 object-contain opacity-70" />
+                        )}
                         <p>&copy; {new Date().getFullYear()} White Villas Accounting Pro</p>
                     </div>
                 </div>

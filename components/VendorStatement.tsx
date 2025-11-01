@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Vendor, StockMovement, AdminProfile, Material } from '../types';
 import { PrinterIcon, CloseIcon } from './IconComponents';
@@ -87,7 +88,10 @@ const VendorStatement: React.FC<VendorStatementProps> = ({ vendor, purchases, ma
                         </table>
                     </section>
 
-                    <footer className="text-center text-xs text-gray-500 mt-16 pt-4 border-t">
+                    <footer className="relative text-center text-xs text-gray-500 mt-16 pt-4 border-t">
+                         {adminProfile.stampUrl && (
+                            <img src={adminProfile.stampUrl} alt="Stamp" className="absolute -top-16 right-0 w-28 h-28 object-contain opacity-70" />
+                        )}
                         <p>&copy; {new Date().getFullYear()} {adminProfile.companyName}</p>
                     </footer>
                 </div>

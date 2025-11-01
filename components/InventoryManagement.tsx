@@ -88,108 +88,110 @@ const InventoryManagement: React.FC<InventoryManagementProps> = ({ materials, ma
 
     return (
         <>
-             <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                <h2 className="text-xl font-semibold text-white">Inventory Overview</h2>
-                <div className="flex gap-4 w-full sm:w-auto">
-                    <button onClick={() => setStockOutModalOpen(true)} className="w-full flex-1 px-4 py-2 bg-red-600 text-white font-bold text-sm rounded-lg hover:bg-red-500">Issue Stock</button>
-                    <button onClick={() => setStockInModalOpen(true)} className="w-full flex-1 px-4 py-2 bg-green-600 text-white font-bold text-sm rounded-lg hover:bg-green-500">Add Stock</button>
-                </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <StatCard 
-                  title="Total Inventory Value" 
-                  value={`PKR ${inventorySummary.totalValue.toLocaleString()}`}
-                  icon={<PackageIcon className="h-8 w-8 text-blue-400" />}
-                  colorClass="bg-blue-500"
-                />
-                <StatCard 
-                  title="Distinct Items in Stock" 
-                  value={inventorySummary.distinctItems.toString()}
-                  icon={<SquareStackIcon className="h-8 w-8 text-purple-400" />}
-                  colorClass="bg-purple-500"
-                />
-                <StatCard 
-                  title="Items Low on Stock" 
-                  value={inventorySummary.lowStockCount.toString()}
-                  icon={<AlertTriangleIcon className="h-8 w-8 text-yellow-400" />}
-                  colorClass="bg-yellow-500"
-                />
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                    <h3 className="text-xl font-semibold text-white mb-4">Top 10 Stocked Items (by quantity)</h3>
-                    {chartData.length > 0 ? (
-                        <div style={{ width: '100%', height: 400 }}>
-                            <ResponsiveContainer>
-                                <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#4A5568" />
-                                    <XAxis type="number" stroke="#A0AEC0" />
-                                    <YAxis type="category" dataKey="name" stroke="#A0AEC0" width={120} tick={{ fontSize: 12, fill: '#A0AEC0' }} interval={0} />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: '#1A202C', border: '1px solid #4A5568' }}
-                                        formatter={(value: number) => [value.toLocaleString(), "Stock"]}
-                                    />
-                                    <Bar dataKey="stock" name="Current Stock">
-                                        {chartData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                        ))}
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    ) : (
-                        <div className="flex items-center justify-center h-full text-gray-400">
-                            No stock data to display.
-                        </div>
-                    )}
-                </div>
-
-                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                    <h3 className="text-xl font-semibold text-white mb-4">Full Inventory List</h3>
-                     <div className="mb-4">
-                        <input 
-                            type="text"
-                            placeholder="Search materials..."
-                            value={searchTerm}
-                            onChange={e => setSearchTerm(e.target.value)}
-                            className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white"
-                        />
+            <div className="bg-background-secondary p-6 rounded-lg shadow-lg border border-secondary">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                    <h2 className="text-2xl font-bold text-accent">Inventory Overview</h2>
+                    <div className="flex gap-4">
+                        <button onClick={() => setStockOutModalOpen(true)} className="px-4 py-2 bg-red-600 text-white font-bold text-sm rounded-lg hover:bg-red-500">Issue Stock</button>
+                        <button onClick={() => setStockInModalOpen(true)} className="px-4 py-2 bg-green-600 text-white font-bold text-sm rounded-lg hover:bg-green-500">Add Stock</button>
                     </div>
-                    <div className="overflow-x-auto max-h-[60vh]">
-                        <table className="w-full text-sm text-left text-gray-300">
-                            <thead className="text-xs text-gray-400 uppercase bg-gray-700 sticky top-0">
-                                <tr>
-                                    <th className="px-6 py-3">Material</th>
-                                    <th className="px-6 py-3">Category</th>
-                                    <th className="px-6 py-3 text-right">Current Stock</th>
-                                    <th className="px-6 py-3">Unit</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredMaterials.map(m => {
-                                    const stock = materialStock.get(m.id) || 0;
-                                    const isLowStock = stock > 0 && stock <= LOW_STOCK_THRESHOLD;
-                                    return (
-                                        <tr key={m.id} className={`border-b border-gray-700 hover:bg-gray-600/50 ${isLowStock ? 'bg-yellow-900/30' : ''}`}>
-                                            <td className="px-6 py-4 font-medium text-white">{m.name}</td>
-                                            <td className="px-6 py-4">{getCategoryName(m.categoryId)}</td>
-                                            <td className={`px-6 py-4 text-right font-bold text-2xl ${isLowStock ? 'text-yellow-400' : 'text-white'}`}>
-                                                {stock.toLocaleString()}
-                                                {isLowStock && <span className="text-xs ml-1 align-top">(Low)</span>}
-                                            </td>
-                                            <td className="px-6 py-4">{m.unit}</td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                         {filteredMaterials.length === 0 && (
-                            <div className="text-center py-16 text-gray-400">
-                                <p>No materials found.</p>
+                </div>
+            
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <StatCard 
+                      title="Total Inventory Value" 
+                      value={`PKR ${inventorySummary.totalValue.toLocaleString()}`}
+                      icon={<PackageIcon className="h-8 w-8 text-blue-400" />}
+                      colorClass="bg-blue-500"
+                    />
+                    <StatCard 
+                      title="Distinct Items in Stock" 
+                      value={inventorySummary.distinctItems.toString()}
+                      icon={<SquareStackIcon className="h-8 w-8 text-purple-400" />}
+                      colorClass="bg-purple-500"
+                    />
+                    <StatCard 
+                      title="Items Low on Stock" 
+                      value={inventorySummary.lowStockCount.toString()}
+                      icon={<AlertTriangleIcon className="h-8 w-8 text-yellow-400" />}
+                      colorClass="bg-yellow-500"
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <div className="lg:col-span-3 bg-background-tertiary p-6 rounded-lg shadow-inner">
+                        <h3 className="text-xl font-semibold text-text-strong mb-4">Top 10 Stocked Items (by quantity)</h3>
+                        {chartData.length > 0 ? (
+                            <div style={{ width: '100%', height: 400 }}>
+                                <ResponsiveContainer>
+                                    <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border-primary)" />
+                                        <XAxis type="number" stroke="var(--text-secondary)" />
+                                        <YAxis type="category" dataKey="name" stroke="var(--text-secondary)" width={120} tick={{ fontSize: 12, fill: 'var(--text-primary)' }} interval={0} />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: 'var(--background-primary)', border: '1px solid var(--border-secondary)' }}
+                                            formatter={(value: number) => [value.toLocaleString(), "Stock"]}
+                                        />
+                                        <Bar dataKey="stock" name="Current Stock">
+                                            {chartData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center h-full text-text-secondary">
+                                No stock data to display.
                             </div>
                         )}
+                    </div>
+
+                    <div className="lg:col-span-2 bg-background-tertiary p-6 rounded-lg shadow-inner">
+                        <h3 className="text-xl font-semibold text-text-strong mb-4">Full Inventory List</h3>
+                         <div className="mb-4">
+                            <input 
+                                type="text"
+                                placeholder="Search materials..."
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                                className="w-full bg-input border border-secondary rounded-lg px-3 py-2 text-text-strong placeholder-text-secondary"
+                            />
+                        </div>
+                        <div className="overflow-x-auto max-h-[60vh]">
+                            <table className="w-full text-sm text-left text-text-primary">
+                                <thead className="text-xs text-text-secondary uppercase bg-background-tertiary-hover sticky top-0">
+                                    <tr>
+                                        <th className="px-6 py-3">Material</th>
+                                        <th className="px-6 py-3">Category</th>
+                                        <th className="px-6 py-3 text-right">Current Stock</th>
+                                        <th className="px-6 py-3">Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredMaterials.map(m => {
+                                        const stock = materialStock.get(m.id) || 0;
+                                        const isLowStock = stock > 0 && stock <= LOW_STOCK_THRESHOLD;
+                                        return (
+                                            <tr key={m.id} className={`border-b border-secondary hover:bg-background-tertiary-hover ${isLowStock ? 'bg-amber-900/40' : ''}`}>
+                                                <td className="px-6 py-4 font-medium text-text-strong">{m.name}</td>
+                                                <td className="px-6 py-4">{getCategoryName(m.categoryId)}</td>
+                                                <td className={`px-6 py-4 text-right font-bold text-2xl ${isLowStock ? 'text-yellow-400' : 'text-text-strong'}`}>
+                                                    {stock.toLocaleString()}
+                                                    {isLowStock && <span className="text-xs ml-1 align-top">(Low)</span>}
+                                                </td>
+                                                <td className="px-6 py-4">{m.unit}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                             {filteredMaterials.length === 0 && (
+                                <div className="text-center py-16 text-text-secondary">
+                                    <p>No materials found.</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

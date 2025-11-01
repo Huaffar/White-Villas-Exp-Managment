@@ -10,27 +10,46 @@ interface DashboardLayoutModalProps {
 
 const DashboardLayoutModal: React.FC<DashboardLayoutModalProps> = ({ widgets, onSave, onClose }) => {
     const [localWidgets, setLocalWidgets] = useState(widgets);
+    
+    // Ensure all possible widgets are present for customization
+    const allWidgetDefinitions: Pick<DashboardWidget, 'id' | 'name'>[] = [
+        { id: 'incomeExpense', name: 'Income vs Expense Chart' },
+        { id: 'incomeTrend', name: 'Income Trend Chart' },
+        { id: 'expenseTrend', name: 'Expense Trend Chart' },
+        { id: 'expenseBreakdown', name: 'Expense Breakdown' },
+        { id: 'ownerPayment', name: 'Owner Payments Chart' },
+        { id: 'recentIncome', name: 'Recent Income' },
+        { id: 'recentExpenses', name: 'Recent Expenses' },
+    ];
+
+    const fullWidgetList = allWidgetDefinitions.map(def => {
+        const existing = localWidgets.find(w => w.id === def.id);
+        return existing || { ...def, isVisible: false, size: 1 };
+    });
+
+    const [editableWidgets, setEditableWidgets] = useState(fullWidgetList);
+
 
     const handleSave = () => {
-        onSave(localWidgets);
+        onSave(editableWidgets);
         onClose();
     };
 
     const handleVisibilityChange = (id: string, isVisible: boolean) => {
-        setLocalWidgets(prev => prev.map(w => w.id === id ? { ...w, isVisible } : w));
+        setEditableWidgets(prev => prev.map(w => w.id === id ? { ...w, isVisible } : w));
     };
 
     const handleSizeChange = (id: string, size: 1 | 2) => {
-        setLocalWidgets(prev => prev.map(w => w.id === id ? { ...w, size } : w));
+        setEditableWidgets(prev => prev.map(w => w.id === id ? { ...w, size } : w));
     };
 
     const handleMove = (index: number, direction: 'up' | 'down') => {
-        const newWidgets = [...localWidgets];
+        const newWidgets = [...editableWidgets];
         const targetIndex = direction === 'up' ? index - 1 : index + 1;
         if (targetIndex < 0 || targetIndex >= newWidgets.length) return;
 
         [newWidgets[index], newWidgets[targetIndex]] = [newWidgets[targetIndex], newWidgets[index]];
-        setLocalWidgets(newWidgets);
+        setEditableWidgets(newWidgets);
     };
 
     return (
@@ -38,7 +57,7 @@ const DashboardLayoutModal: React.FC<DashboardLayoutModalProps> = ({ widgets, on
             <div className="bg-background-secondary p-8 rounded-lg shadow-2xl w-full max-w-2xl border border-primary max-h-[90vh] flex flex-col">
                 <h2 className="text-2xl font-bold text-accent mb-6">Customize Dashboard Layout</h2>
                 <div className="space-y-3 overflow-y-auto flex-grow pr-2">
-                    {localWidgets.map((widget, index) => (
+                    {editableWidgets.map((widget, index) => (
                         <div key={widget.id} className="grid grid-cols-12 items-center gap-4 bg-background-tertiary p-3 rounded-md">
                             <div className="col-span-1">
                                 <input
@@ -71,7 +90,7 @@ const DashboardLayoutModal: React.FC<DashboardLayoutModalProps> = ({ widgets, on
                                 <button onClick={() => handleMove(index, 'up')} disabled={index === 0} className="p-2 rounded-md bg-background-tertiary-hover disabled:opacity-30 disabled:cursor-not-allowed">
                                     <ArrowUpIcon className="w-5 h-5 text-text-strong" />
                                 </button>
-                                <button onClick={() => handleMove(index, 'down')} disabled={index === localWidgets.length - 1} className="p-2 rounded-md bg-background-tertiary-hover disabled:opacity-30 disabled:cursor-not-allowed">
+                                <button onClick={() => handleMove(index, 'down')} disabled={index === editableWidgets.length - 1} className="p-2 rounded-md bg-background-tertiary-hover disabled:opacity-30 disabled:cursor-not-allowed">
                                     <ArrowDownIcon className="w-5 h-5 text-text-strong" />
                                 </button>
                             </div>

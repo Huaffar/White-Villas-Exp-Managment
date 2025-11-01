@@ -1,6 +1,7 @@
 
 
 
+
 import React, { useState } from 'react';
 import { AdminProfile, User, Contact } from '../types';
 import UserManagement from './UserManagement';
@@ -24,21 +25,22 @@ interface SettingsProps {
 const ProfileSettings: React.FC<{ profile: AdminProfile, onSave: (profile: AdminProfile) => void, showToast: (m: string, t: ToastProps['type']) => void }> = ({ profile, onSave, showToast }) => {
     const [companyName, setCompanyName] = useState(profile.companyName);
     const [logoUrl, setLogoUrl] = useState(profile.logoUrl);
+    const [stampUrl, setStampUrl] = useState(profile.stampUrl);
     const [address, setAddress] = useState(profile.address);
     const [phone, setPhone] = useState(profile.phone);
     const [currencySymbol, setCurrencySymbol] = useState(profile.currencySymbol);
 
     const handleSave = () => {
-        onSave({ ...profile, companyName, logoUrl, address, phone, currencySymbol });
+        onSave({ ...profile, companyName, logoUrl, stampUrl, address, phone, currencySymbol });
         showToast('Profile updated successfully!', 'success');
     };
 
-    const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string | undefined>>) => {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setLogoUrl(reader.result as string);
+                setter(reader.result as string);
             };
             reader.readAsDataURL(file);
         }
@@ -67,15 +69,32 @@ const ProfileSettings: React.FC<{ profile: AdminProfile, onSave: (profile: Admin
                     <input type="text" value={address} onChange={e => setAddress(e.target.value)} className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white" />
                 </div>
             </div>
-             <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Company Logo</label>
-                <div className="flex items-center gap-4 mt-2">
-                    {logoUrl && <img src={logoUrl} alt="Logo" className="h-16 w-16 bg-white p-1 rounded-md object-contain" />}
-                    <input type="file" id="logo-upload" onChange={handleLogoUpload} accept="image/*" className="hidden" />
-                    <label htmlFor="logo-upload" className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500">
-                        <ArrowUpTrayIcon className="w-5 h-5" />
-                        Upload Logo
-                    </label>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-gray-700">
+                <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Company Logo</label>
+                    <div className="flex items-center gap-4 mt-2">
+                        {logoUrl && <img src={logoUrl} alt="Logo" className="h-16 w-16 bg-white p-1 rounded-md object-contain" />}
+                        <input type="file" id="logo-upload" onChange={(e) => handleFileUpload(e, setLogoUrl)} accept="image/*" className="hidden" />
+                        <label htmlFor="logo-upload" className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500">
+                            <ArrowUpTrayIcon className="w-5 h-5" />
+                            Upload Logo
+                        </label>
+                    </div>
+                </div>
+                 <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Company Stamp</label>
+                    <div className="flex items-center gap-4 mt-2">
+                        {stampUrl && <img src={stampUrl} alt="Stamp" className="h-20 w-auto bg-white p-1 rounded-md object-contain" />}
+                        <input type="file" id="stamp-upload" onChange={(e) => handleFileUpload(e, setStampUrl)} accept="image/*" className="hidden" />
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="stamp-upload" className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500 text-sm">
+                                <ArrowUpTrayIcon className="w-5 h-5" />
+                                Upload Stamp
+                            </label>
+                            {stampUrl && <button onClick={() => setStampUrl('')} className="px-4 py-2 bg-red-800/50 text-red-300 text-sm rounded-md hover:bg-red-800">Remove</button>}
+                        </div>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2">Recommended: A transparent PNG image.</p>
                 </div>
             </div>
             <div className="flex justify-end">

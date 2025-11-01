@@ -1,5 +1,6 @@
+
 import {
-    Transaction, TransactionType, Category, Project, ProjectStatus, StaffMember, StaffStatus, Laborer, LaborerStatus, Contact, User, UserRole, AdminProfile, MaterialCategory, Material, VendorCategory, Vendor, StockMovement, Lead, LeadSource, LeadFollowUp, LeadStatus
+    Transaction, TransactionType, Category, Project, ProjectStatus, StaffMember, StaffStatus, Laborer, LaborerStatus, Contact, User, UserRole, AdminProfile, MaterialCategory, Material, VendorCategory, Vendor, StockMovement, LeadStatus, Commission
 } from '../types';
 
 
@@ -12,9 +13,9 @@ export const mockUsers: User[] = [
 ];
 
 export const mockContacts: Contact[] = [
-    { id: 1, name: 'Asif Malik', company: 'Malik Corp', phone: '923001112222', email: 'asif@malik.com', type: 'Client' },
+    { id: 1, name: 'Asif Malik', company: 'Malik Corp', phone: '923001112222', email: 'asif@malik.com', type: 'Client', cnic: '35202-1234567-1', imageUrl: '' },
     { id: 2, name: 'Builders Supply Co.', phone: '923213334444', type: 'Supplier' },
-    { id: 3, name: 'Zainab Ansari', phone: '923335556666', email: 'zainab@ansari.com', type: 'Client' },
+    { id: 3, name: 'Zainab Ansari', phone: '923335556666', email: 'zainab@ansari.com', type: 'Client', cnic: '35202-7654321-2', imageUrl: '' },
 ];
 
 export const mockLeadStatuses: LeadStatus[] = [
@@ -26,15 +27,10 @@ export const mockLeadStatuses: LeadStatus[] = [
     { id: 'lost', name: 'Lost', color: '#EF4444' },
 ];
 
-export const mockLeads: Lead[] = [
-    { id: 1, name: 'John Doe', phone: '923009876543', statusId: 'new', source: 'Website', createdAt: new Date().toISOString(), potentialValue: 500000, followUps: [] },
-    { id: 2, name: 'Jane Smith', company: 'Smith Enterprises', phone: '923211234567', email: 'jane@smith.com', statusId: 'contacted', source: 'Referral', assignedToId: 3, createdAt: new Date().toISOString(), potentialValue: 1200000, followUps: [{id: 1, date: new Date().toISOString(), notes: 'Initial call made, sent portfolio.', userId: 3}] },
-    { id: 3, name: 'Kamran Trading', phone: '923334567890', statusId: 'qualified', source: 'Facebook', assignedToId: 4, createdAt: new Date().toISOString(), potentialValue: 850000, followUps: [] },
-];
-
 export const mockAdminProfile: AdminProfile = {
     companyName: 'White Villas Accounting Pro',
     logoUrl: 'https://img.icons8.com/ios-filled/50/ffffff/villa.png',
+    stampUrl: '',
     address: '123 Villa Street, Lahore, Pakistan',
     phone: '+92 42 3000 0000',
     currencySymbol: 'PKR',
@@ -94,9 +90,16 @@ export const mockTransactions: Transaction[] = [
     { id: 2, date: '2023-04-05', details: 'Salary for M Ghaffar - March', category: 'Staff Salaries', type: TransactionType.EXPENSE, amount: 120000, balance: 1880000, staffId: 1 },
     { id: 3, date: '2023-04-10', details: 'Payment for Villa Renovation - Phase 1', category: 'Project Payments from Clients', type: TransactionType.INCOME, amount: 1000000, balance: 2880000, projectId: 1, contactId: 1 },
     { id: 4, date: '2023-04-12', details: 'Payment to Karam Din for 5 days work', category: 'Construction Labor', type: TransactionType.EXPENSE, amount: 12500, balance: 2867500, laborerId: 1, projectId: 1 },
-    { id: 5, date: '2023-04-15', details: 'Office Electricity Bill', category: 'Utilities', type: TransactionType.EXPENSE, amount: 15000, balance: 2852500 },
-    { id: 6, date: '2023-04-20', details: 'Owner withdrawal for personal use', category: 'Owner Withdrawal', type: TransactionType.AMOUNT_OUT, amount: 50000, balance: 2802500 },
-    { id: 7, date: '2023-04-22', details: 'Payment to Builders Supply Co.', category: 'Vendor Payment', type: TransactionType.EXPENSE, amount: 250000, balance: 2552500, vendorId: 1, paymentMethod: 'Bank' },
+    { id: 8, date: '2023-04-15', details: 'Paid commission: Bonus for Villa Renovation milestone', category: 'Staff Commission', type: TransactionType.EXPENSE, amount: 25000, balance: 2842500, staffId: 1 },
+    { id: 5, date: '2023-04-15', details: 'Office Electricity Bill', category: 'Utilities', type: TransactionType.EXPENSE, amount: 15000, balance: 2827500 },
+    { id: 6, date: '2023-04-20', details: 'Owner withdrawal for personal use', category: 'Owner Withdrawal', type: TransactionType.AMOUNT_OUT, amount: 50000, balance: 2777500 },
+    { id: 7, date: '2023-04-22', details: 'Payment to Builders Supply Co.', category: 'Vendor Payment', type: TransactionType.EXPENSE, amount: 250000, balance: 2527500, vendorId: 1, paymentMethod: 'Bank' },
+];
+
+export const mockCommissions: Commission[] = [
+    { id: 1, staffId: 1, date: '2023-04-10', amount: 25000, remarks: 'Bonus for Villa Renovation milestone', isPaid: true, paidTransactionId: 8 },
+    { id: 2, staffId: 1, date: '2023-04-25', amount: 15000, remarks: 'Commission for Garden Design project', isPaid: false },
+    { id: 3, staffId: 2, date: '2023-04-18', amount: 10000, remarks: 'Client referral bonus', isPaid: false },
 ];
 
 export const mockMaterialCategories: MaterialCategory[] = [
@@ -144,7 +147,7 @@ const appMockData = {
     vendorCategories: mockVendorCategories,
     vendors: mockVendors,
     stockMovements: mockStockMovements,
-    leads: mockLeads,
+    commissions: mockCommissions,
 };
 
 export default appMockData;

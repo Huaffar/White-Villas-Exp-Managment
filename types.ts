@@ -1,3 +1,4 @@
+
 export enum TransactionType {
     INCOME = 'Income',
     EXPENSE = 'Expense',
@@ -77,6 +78,16 @@ export interface StaffMember {
     imageUrl?: string;
 }
 
+export interface Commission {
+    id: number;
+    staffId: number;
+    date: string; // Date earned
+    amount: number;
+    remarks: string;
+    isPaid: boolean;
+    paidTransactionId?: number;
+}
+
 export enum LaborerStatus {
     ACTIVE = 'Active',
     INACTIVE = 'Inactive',
@@ -98,6 +109,8 @@ export interface Contact {
     phone: string;
     email?: string;
     type: 'Client' | 'Supplier' | 'Other';
+    cnic?: string;
+    imageUrl?: string;
 }
 
 export interface User {
@@ -117,6 +130,31 @@ export enum UserRole {
     CLIENT = 'Client'
 }
 
+// FIX: Added missing Lead-related types.
+export type LeadSource = 'Website' | 'Referral' | 'Facebook' | 'Cold Call' | 'Other';
+
+export interface LeadFollowUp {
+    id: number;
+    date: string; // ISO string
+    notes: string;
+    userId: number; // ID of the user who made the follow-up
+}
+
+export interface Lead {
+    id: number;
+    name: string;
+    company?: string;
+    phone: string;
+    email?: string;
+    statusId: string; // Corresponds to LeadStatus.id
+    source: LeadSource;
+    assignedToId?: number; // ID of the user it's assigned to
+    potentialValue?: number;
+    notes?: string;
+    createdAt: string; // ISO string
+    followUps: LeadFollowUp[];
+}
+
 export interface LeadStatus {
     id: string;
     name: string;
@@ -126,6 +164,7 @@ export interface LeadStatus {
 export interface AdminProfile {
     companyName: string;
     logoUrl?: string;
+    stampUrl?: string;
     address?: string;
     phone?: string;
     currencySymbol: string;
@@ -204,29 +243,4 @@ export interface ClientData {
     }
 }
 
-// Leads Management Types
-export type LeadSource = 'Website' | 'Referral' | 'Facebook' | 'Cold Call' | 'Other';
-
-export interface LeadFollowUp {
-    id: number;
-    date: string; // ISO String
-    notes: string;
-    userId: number;
-}
-
-export interface Lead {
-    id: number;
-    name: string;
-    company?: string;
-    phone: string;
-    email?: string;
-    statusId: string; // Link to LeadStatus ID
-    source: LeadSource;
-    assignedToId?: number; // User ID
-    createdAt: string; // ISO Date string
-    notes?: string;
-    potentialValue?: number;
-    followUps: LeadFollowUp[];
-}
-
-export type View = 'dashboard' | 'addEntry' | 'clientLedger' | 'staff' | 'staffProfile' | 'labor' | 'laborerProfile' | 'projects' | 'projectDetail' | 'houseExpense' | 'ownerPayments' | 'construction' | 'vendorDetail' | 'reports' | 'contacts' | 'accounts' | 'settings' | 'clientPortal' | 'leads';
+export type View = 'dashboard' | 'addEntry' | 'clientLedger' | 'staff' | 'staffProfile' | 'labor' | 'laborerProfile' | 'projects' | 'projectDetail' | 'houseExpense' | 'ownerPayments' | 'construction' | 'vendorDetail' | 'reports' | 'clientProfiles' | 'clientDetail' | 'accounts' | 'settings' | 'clientPortal';

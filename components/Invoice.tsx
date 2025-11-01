@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 // FIX: Corrected import path for types.
-import { StaffMember, Transaction } from '../types';
+import { StaffMember, Transaction, AdminProfile } from '../types';
 
 interface InvoiceProps {
   staffMember: StaffMember;
   transaction: Transaction;
-  companyProfile: {name: string, logoUrl?: string};
+  companyProfile: AdminProfile;
 }
 
 const Invoice: React.FC<InvoiceProps> = ({ staffMember, transaction, companyProfile }) => {
@@ -18,7 +18,8 @@ const Invoice: React.FC<InvoiceProps> = ({ staffMember, transaction, companyProf
     <div id="printable-report" className="bg-white text-gray-900 p-12 font-sans">
         <div className="flex justify-between items-center border-b-2 pb-4 border-gray-200">
             <div>
-                <h1 className="text-3xl font-bold">{companyProfile.name}</h1>
+                {/* FIX: Corrected property access from companyProfile.name to companyProfile.companyName. */}
+                <h1 className="text-3xl font-bold">{companyProfile.companyName}</h1>
                 <p className="text-gray-600">Salary Slip</p>
             </div>
             {companyProfile.logoUrl && <img src={companyProfile.logoUrl} alt="Company Logo" className="h-16 w-auto" />}
@@ -61,9 +62,13 @@ const Invoice: React.FC<InvoiceProps> = ({ staffMember, transaction, companyProf
             </table>
         </div>
 
-        <div className="mt-12 text-center text-sm text-gray-500">
+        <div className="relative mt-12 text-center text-sm text-gray-500">
+             {companyProfile.stampUrl && (
+                <img src={companyProfile.stampUrl} alt="Stamp" className="absolute -top-16 right-0 w-28 h-28 object-contain opacity-70" />
+            )}
             <p>This is a computer-generated salary slip and does not require a signature.</p>
-            <p>&copy; {new Date().getFullYear()} {companyProfile.name}</p>
+            {/* FIX: Corrected property access from companyProfile.name to companyProfile.companyName. */}
+            <p>&copy; {new Date().getFullYear()} {companyProfile.companyName}</p>
         </div>
     </div>
   );

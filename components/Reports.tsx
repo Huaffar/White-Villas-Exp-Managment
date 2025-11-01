@@ -5,6 +5,7 @@ import ProfitAndLossStatement from './ProfitAndLossStatement';
 import ProjectProfitabilityReport from './ProjectProfitabilityReport';
 import StaffPayrollReport from './StaffPayrollReport';
 import FullLedgerReport from './FullLedgerReport';
+import AllTransactionHistory from './AllTransactionHistory';
 
 interface ReportsProps {
   projects: Project[];
@@ -37,7 +38,7 @@ const Reports: React.FC<ReportsProps> = (props) => {
             case 'ledger':
                 return <FullLedgerReport transactions={props.transactions} incomeCategories={props.incomeCategories} expenseCategories={props.expenseCategories} onEditTransaction={props.onEditTransaction} adminProfile={props.adminProfile} />;
             case 'history':
-                return <FullLedgerReport transactions={props.transactions} incomeCategories={props.incomeCategories} expenseCategories={props.expenseCategories} onEditTransaction={props.onEditTransaction} adminProfile={props.adminProfile} />;
+                return <AllTransactionHistory transactions={props.transactions} incomeCategories={props.incomeCategories} expenseCategories={props.expenseCategories} onEditTransaction={props.onEditTransaction} adminProfile={props.adminProfile} />;
             default:
                 return null;
         }

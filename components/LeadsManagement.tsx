@@ -1,123 +1,59 @@
-import React, { useState } from 'react';
-import { Lead, LeadStatus, User } from '../types';
-import LeadDetailModal from './LeadDetailModal';
-import LeadFormModal from './LeadFormModal';
-import { PlusIcon } from './IconComponents';
+import React from 'react';
+import { Contact, Project } from '../types';
 
-interface LeadsManagementProps {
-    leads: Lead[];
-    users: User[];
-    statuses: LeadStatus[];
-    onSaveLead: (lead: Lead) => void;
-    onDeleteLead: (lead: Lead) => void;
+interface ClientProfileDetailProps {
+  client: Contact;
+  projects: Project[];
+  onBack: () => void;
 }
 
-const LeadCard: React.FC<{ lead: Lead, onClick: () => void }> = ({ lead, onClick }) => (
-    <div
-        onClick={onClick}
-        className="bg-gray-700 p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-600 transition-colors"
-    >
-        <p className="font-bold text-white">{lead.name}</p>
-        <p className="text-sm text-gray-400">{lead.company}</p>
-        <div className="mt-2 flex justify-between items-center text-xs">
-            <span className="text-gray-400">{lead.source}</span>
-            {lead.potentialValue && (
-                <span className="font-semibold text-yellow-400">
-                    PKR {lead.potentialValue.toLocaleString()}
-                </span>
-            )}
-        </div>
-    </div>
-);
-
-const StatusColumn: React.FC<{
-    status: LeadStatus,
-    leads: Lead[],
-    onCardClick: (lead: Lead) => void
-}> = ({ status, leads, onCardClick }) => {
+const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({ client, projects, onBack }) => {
+    const clientProjects = projects.filter(p => p.contactId === client.id);
+    const initials = client.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    
     return (
-        <div className="w-80 bg-gray-800 rounded-lg p-3 flex flex-col flex-shrink-0">
-            <div className="flex items-center mb-4">
-                <span className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: status.color }}></span>
-                <h3 className="font-semibold text-white">{status.name}</h3>
-                <span className="ml-2 text-sm text-gray-500">{leads.length}</span>
+        <div className="space-y-8">
+             <div>
+                <button onClick={onBack} className="text-sm text-accent hover:text-accent-hover font-semibold">
+                    &larr; Back to Client List
+                </button>
             </div>
-            <div className="space-y-3 overflow-y-auto flex-grow" style={{maxHeight: 'calc(100vh - 20rem)'}}>
-                {leads.map(lead => (
-                    <LeadCard key={lead.id} lead={lead} onClick={() => onCardClick(lead)} />
-                ))}
+            <div className="bg-background-secondary p-8 rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-8">
+                <div className="w-32 h-32 rounded-full bg-accent flex items-center justify-center text-on-accent font-bold text-5xl flex-shrink-0 overflow-hidden border-4 border-background-tertiary">
+                    {client.imageUrl ? <img src={client.imageUrl} alt={client.name} className="w-full h-full object-cover" /> : <span>{initials}</span>}
+                </div>
+                <div className="flex-grow text-center md:text-left">
+                    <h2 className="text-4xl font-bold text-text-strong">{client.name}</h2>
+                    <p className="text-lg text-text-secondary">{client.company}</p>
+                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm border-t border-primary pt-4">
+                        <p><span className="text-text-secondary">Phone:</span> <span className="font-semibold text-text-primary">{client.phone}</span></p>
+                        <p><span className="text-text-secondary">Email:</span> <span className="font-semibold text-text-primary">{client.email || 'N/A'}</span></p>
+                        <p><span className="text-text-secondary">CNIC:</span> <span className="font-semibold text-text-primary">{client.cnic || 'N/A'}</span></p>
+                        <p><span className="text-text-secondary">Type:</span> <span className="font-semibold text-text-primary">{client.type}</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-background-secondary p-6 rounded-lg shadow-lg">
+                <h3 className="text-xl font-semibold text-text-strong mb-4">Properties / Projects</h3>
+                <div className="space-y-4">
+                    {clientProjects.length > 0 ? clientProjects.map(p => (
+                        <div key={p.id} className="bg-background-tertiary p-4 rounded-md flex justify-between items-center">
+                            <div>
+                                <p className="font-bold text-text-strong">{p.name}</p>
+                                <p className="text-xs text-text-secondary">Budget: PKR {p.budget.toLocaleString()}</p>
+                            </div>
+                            <span className={`px-2 py-1 text-xs font-bold rounded-full ${p.status === 'Completed' ? 'bg-green-500/20 text-green-300' : 'bg-blue-500/20 text-blue-300'}`}>
+                                {p.status}
+                            </span>
+                        </div>
+                    )) : (
+                        <p className="text-center text-text-secondary py-8">No projects are linked to this client.</p>
+                    )}
+                </div>
             </div>
         </div>
     );
 };
 
-const LeadsManagement: React.FC<LeadsManagementProps> = ({ leads, users, statuses, onSaveLead, onDeleteLead }) => {
-    const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-    const [isFormOpen, setFormOpen] = useState(false);
-    const [editingLead, setEditingLead] = useState<Lead | undefined>(undefined);
-
-    const handleSave = (lead: Lead) => {
-        onSaveLead(lead);
-        setFormOpen(false);
-        // If we were editing the selected lead, update it
-        if (selectedLead && selectedLead.id === lead.id) {
-            setSelectedLead(lead);
-        }
-    };
-    
-    const handleDelete = (lead: Lead) => {
-        onDeleteLead(lead);
-        setSelectedLead(null);
-    }
-    
-    return (
-        <>
-            <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                    <h1 className="text-3xl font-bold text-yellow-400">Leads Pipeline</h1>
-                    <button
-                        onClick={() => { setEditingLead(undefined); setFormOpen(true); }}
-                        className="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-gray-900 font-bold text-sm rounded-lg hover:bg-yellow-400"
-                    >
-                        <PlusIcon className="w-5 h-5" />
-                        Add New Lead
-                    </button>
-                </div>
-                <div className="flex space-x-4 overflow-x-auto pb-4">
-                    {statuses.map(status => (
-                        <StatusColumn
-                            key={status.id}
-                            status={status}
-                            leads={leads.filter(l => l.statusId === status.id)}
-                            onCardClick={setSelectedLead}
-                        />
-                    ))}
-                </div>
-            </div>
-
-            {selectedLead && (
-                <LeadDetailModal
-                    lead={selectedLead}
-                    users={users}
-                    statuses={statuses}
-                    onClose={() => setSelectedLead(null)}
-                    onEdit={() => { setEditingLead(selectedLead); setFormOpen(true); }}
-                    onDelete={handleDelete}
-                    onSave={onSaveLead}
-                />
-            )}
-            
-            {isFormOpen && (
-                <LeadFormModal
-                    lead={editingLead}
-                    users={users}
-                    statuses={statuses}
-                    onSave={handleSave}
-                    onClose={() => setFormOpen(false)}
-                />
-            )}
-        </>
-    );
-};
-
-export default LeadsManagement;
+export default ClientProfileDetail;

@@ -359,6 +359,13 @@ const FullLedgerReport: React.FC<FullLedgerReportProps> = ({ transactions, incom
                 </div>
             )}
           </div>
+          <div className="hidden print:block mt-16 pt-8 border-t text-right relative">
+                {adminProfile.stampUrl && (
+                    <img src={adminProfile.stampUrl} alt="Stamp" className="absolute -top-12 right-4 w-28 h-28 object-contain opacity-70" />
+                )}
+                <p className="text-sm text-gray-700">_________________________</p>
+                <p className="text-sm text-gray-700 mt-2">Authorised Signatory</p>
+            </div>
        </div>
     </div>
   );

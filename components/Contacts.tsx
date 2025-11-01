@@ -1,77 +1,74 @@
-import React, { useState } from 'react';
-// FIX: Corrected import path for types.
+import React from 'react';
 import { Contact } from '../types';
-import { PencilIcon, TrashIcon } from './IconComponents';
-import ContactFormModal from './ContactFormModal';
+import { PencilIcon, TrashIcon, PlusIcon } from './IconComponents';
 
-interface ContactsProps {
+interface ClientProfilesProps {
     contacts: Contact[];
-    onSaveContact: (contact: Contact) => void;
-    onAddContact: (contact: Omit<Contact, 'id'>) => void;
-    onDeleteContact: (contact: Contact) => void;
+    onViewClient: (client: Contact) => void;
+    onEditClient: (client: Contact) => void;
+    onAddClient: () => void;
+    onDeleteClient: (client: Contact) => void;
 }
 
-const Contacts: React.FC<ContactsProps> = ({ contacts, onSaveContact, onAddContact, onDeleteContact }) => {
-    const [isFormOpen, setFormOpen] = useState(false);
-    const [editingContact, setEditingContact] = useState<Contact | undefined>(undefined);
+const ClientCard: React.FC<{ client: Contact, onView: () => void, onEdit: () => void, onDelete: () => void }> = ({ client, onView, onEdit, onDelete }) => {
+    const initials = client.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    return (
+        <div className="bg-background-secondary rounded-lg shadow-lg flex flex-col">
+            <div className="p-6 flex-grow">
+                <div className="flex items-center gap-4 mb-4">
+                    <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center text-on-accent font-bold text-2xl flex-shrink-0 overflow-hidden">
+                        {client.imageUrl ? <img src={client.imageUrl} alt={client.name} className="w-full h-full object-cover" /> : <span>{initials}</span>}
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-bold text-text-strong">{client.name}</h3>
+                        <p className="text-sm text-text-secondary">{client.company || 'Individual Client'}</p>
+                    </div>
+                </div>
+                <div className="text-sm space-y-2">
+                    <p><span className="font-semibold text-text-secondary">Phone:</span> {client.phone}</p>
+                    <p><span className="font-semibold text-text-secondary">CNIC:</span> {client.cnic || 'N/A'}</p>
+                </div>
+            </div>
+            <div className="bg-background-tertiary p-3 flex justify-between items-center">
+                 <button onClick={onView} className="text-sm font-semibold text-accent hover:text-accent-hover">View Full Profile</button>
+                 <div className="flex gap-2">
+                    <button onClick={onEdit} className="p-2 text-text-secondary hover:text-text-strong"><PencilIcon className="w-4 h-4" /></button>
+                    <button onClick={onDelete} className="p-2 text-text-secondary hover:text-red-400"><TrashIcon className="w-4 h-4" /></button>
+                 </div>
+            </div>
+        </div>
+    );
+};
 
-    const handleSave = (contact: Contact) => {
-        if(contact.id === 0) {
-            onAddContact({name: contact.name, company: contact.company, phone: contact.phone, email: contact.email, type: contact.type});
-        } else {
-            onSaveContact(contact);
-        }
-        setFormOpen(false);
-        setEditingContact(undefined);
-    }
+
+const ClientProfiles: React.FC<ClientProfilesProps> = ({ contacts, onViewClient, onEditClient, onAddClient, onDeleteClient }) => {
+    const clients = contacts.filter(c => c.type === 'Client');
 
     return (
         <div className="space-y-8">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold primary-text">Contacts</h1>
-                <button onClick={() => {setEditingContact(undefined); setFormOpen(true)}} className="px-4 py-2 primary-bg text-gray-900 font-bold text-sm rounded-lg hover:opacity-90">
-                    Add New Contact
+                <h1 className="text-3xl font-bold text-accent">Client Profiles</h1>
+                <button onClick={onAddClient} className="flex items-center gap-2 px-4 py-2 bg-accent text-on-accent font-bold text-sm rounded-lg hover:bg-accent-hover transition-colors">
+                    <PlusIcon className="w-5 h-5" /> Add New Client
                 </button>
             </div>
-            <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left text-gray-300">
-                        <thead className="text-xs text-gray-400 uppercase bg-gray-700">
-                            <tr>
-                                <th className="px-6 py-3">Name</th>
-                                <th className="px-6 py-3">Company</th>
-                                <th className="px-6 py-3">Phone</th>
-                                <th className="px-6 py-3">Type</th>
-                                <th className="px-6 py-3 text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {contacts.map(c => (
-                                <tr key={c.id} className="border-b border-gray-700 hover:bg-gray-600/50">
-                                    <td className="px-6 py-4 font-medium text-white">{c.name}</td>
-                                    <td className="px-6 py-4">{c.company}</td>
-                                    <td className="px-6 py-4">{c.phone}</td>
-                                    <td className="px-6 py-4">{c.type}</td>
-                                    <td className="px-6 py-4 text-center">
-                                        <div className="flex justify-center gap-4">
-                                            <button onClick={() => {setEditingContact(c); setFormOpen(true)}} className="text-blue-400 hover:text-blue-300"><PencilIcon className="w-4 h-4" /></button>
-                                            <button onClick={() => onDeleteContact(c)} className="text-red-500 hover:text-red-400"><TrashIcon className="w-4 h-4" /></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {clients.map(c => (
+                    <ClientCard 
+                        key={c.id} 
+                        client={c}
+                        onView={() => onViewClient(c)}
+                        onEdit={() => onEditClient(c)}
+                        onDelete={() => onDeleteClient(c)}
+                    />
+                ))}
             </div>
-            {isFormOpen && (
-                <ContactFormModal 
-                    contact={editingContact}
-                    onSave={handleSave}
-                    onClose={() => setFormOpen(false)}
-                />
+             {clients.length === 0 && (
+                <div className="text-center py-16 bg-background-secondary rounded-lg">
+                    <p className="text-text-secondary">No clients found. Click 'Add New Client' to get started.</p>
+                </div>
             )}
         </div>
     );
 };
-export default Contacts;
+export default ClientProfiles;

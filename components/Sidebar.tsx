@@ -93,7 +93,7 @@ const Sidebar: React.FC < SidebarProps > = ({
     }, {
         label: 'Client Ledger',
         view: 'clientLedger',
-        icon: < IdentificationIcon / > ,
+        icon: < BookOpenIcon / > ,
         roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.STAFF_ACCOUNTANT]
     }, {
         label: 'Staff',
@@ -131,9 +131,9 @@ const Sidebar: React.FC < SidebarProps > = ({
         icon: < ChartBarIcon / > ,
         roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.STAFF_ACCOUNTANT]
     }, {
-        label: 'Contacts',
-        view: 'contacts',
-        icon: < ClipboardDocumentListIcon / > ,
+        label: 'Client Profiles',
+        view: 'clientProfiles',
+        icon: < IdentificationIcon / > ,
         roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.STAFF_ACCOUNTANT]
     }, {
         label: 'Accounts',
@@ -141,15 +141,10 @@ const Sidebar: React.FC < SidebarProps > = ({
         icon: < TagIcon / > ,
         roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN]
     }, {
-        label: 'Leads',
-        view: 'leads',
-        icon: < FunnelIcon / > ,
-        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN]
-    }, {
         label: 'Settings',
         view: 'settings',
         icon: < CogIcon / > ,
-        roles: [UserRole.SUPER_ADMIN]
+        roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN]
     }, {
         label: 'Client Portal',
         view: 'clientPortal',

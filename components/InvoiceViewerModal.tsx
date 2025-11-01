@@ -58,7 +58,7 @@ const InvoiceViewerModal: React.FC<InvoiceViewerModalProps> = ({ staffMember, tr
                     <Invoice 
                         staffMember={staffMember} 
                         transaction={transaction}
-                        companyProfile={{ name: adminProfile.companyName, logoUrl: adminProfile.logoUrl }}
+                        companyProfile={adminProfile}
                     />
                 </div>
             </div>
